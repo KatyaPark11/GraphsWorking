@@ -21,7 +21,7 @@ namespace Assets.Scripts.GraphComponents
         /// </summary>
         public LineRenderer ArrowRenderer { get; private set; }
         /// <summary>
-        /// Поле ввода для указания веса линии.
+        /// Поле ввода для указания веса/загруженности (в зависимости от типа графа) линии.
         /// </summary>
         public TMP_InputField WeightIF { get; private set; }
         /// <summary>
@@ -33,7 +33,7 @@ namespace Assets.Scripts.GraphComponents
         /// </summary>
         public Point EndPoint { get; set; }
         /// <summary>
-        /// Вес линии.
+        /// Вес/загруженность (в зависимости от типа графа) линии.
         /// </summary>
         public int Weight { get; set; }
 

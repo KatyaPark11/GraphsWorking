@@ -25,12 +25,23 @@ namespace Assets.Scripts.GraphComponents
         public const int MaxPointsCount = 26;
 
         /// <summary>
-        /// Конструктор класса.
+        /// Конструктор класса для создания нового графа.
         /// </summary>
         public Graph() 
         { 
             Lines = new List<Line>();
             Points = new List<Point>();
+        }
+
+        /// <summary>
+        /// Конструктор класса для создания копии графа (ссылки на объекты сохраняются).
+        /// </summary>
+        /// <param name="lines">Список линий, из которых состоит граф.</param>
+        /// <param name="points">Список точек, из которых состоит граф.</param>
+        public Graph(List<Line> lines, List<Point> points)
+        {
+            Lines = lines;
+            Points = points;
         }
 
         public Graph(string filePath)
@@ -51,6 +62,11 @@ namespace Assets.Scripts.GraphComponents
             line = new Line(newLineGO, point, point);
             line.SetLineRendererPos();
             Lines.Add(line);
+        }
+
+        public void RemoveLine(int lineIndex)
+        {
+            Lines.RemoveAt(lineIndex);
         }
 
         public void SetLinkedLines()

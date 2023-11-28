@@ -1,5 +1,6 @@
 using Assets.Scripts.GraphComponents;
 using UnityEngine;
+using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
 {
@@ -8,14 +9,13 @@ namespace Assets.Scripts.GraphEditors
         public GameObject PointPrefab;
         public Canvas Canvas;
         public GameObject LinePrefab;
-        public static Graph Graph;
         public GameObject PointMovement;
 
         private Line curLine;
 
         private void OnEnable() => PointMovement.SetActive(false);
 
-        private void Start() => Graph = new Graph();
+        private void Start() => MainGraph = new Graph();
 
         private void Update()
         {
@@ -32,17 +32,17 @@ namespace Assets.Scripts.GraphEditors
                     if (go.CompareTag("Point"))
                     {
                         int pointIndex = char.Parse(go.name) - 'A';
-                        Point point = Graph.Points[pointIndex];
+                        Point point = MainGraph.Points[pointIndex];
                         if (curLine == null)
                         {
                             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
-                            Graph.AddLine(newLine, point, ref curLine);
+                            MainGraph.AddLine(newLine, point, ref curLine);
                             return;
                         }
 
                         Line line = new(curLine.StartPoint, point);
                         if (point == curLine.StartPoint) return;
-                        if (Graph.Lines.Contains(line))
+                        if (MainGraph.Lines.Contains(line))
                         {
                             curLine.GoToTheAnotherPoint(point);
                         }
@@ -50,20 +50,20 @@ namespace Assets.Scripts.GraphEditors
                         {
                             curLine.SetEndPoint(point);
                             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
-                            Graph.AddLine(newLine, point, ref curLine);
+                            MainGraph.AddLine(newLine, point, ref curLine);
                         }
                     }
                 }
                 else
                 {
-                    if (Graph.Points.Count > 0 && curLine == null) return;
-                    else if (Graph.Points.Count >= Graph.MaxPointsCount) return;
+                    if (MainGraph.Points.Count > 0 && curLine == null) return;
+                    else if (MainGraph.Points.Count >= Graph.MaxPointsCount) return;
 
                     GameObject newPointGO = Instantiate(PointPrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
-                    Graph.AddPoint(newPointGO);
-                    curLine?.SetEndPoint(Graph.Points[^1]);
+                    MainGraph.AddPoint(newPointGO);
+                    curLine?.SetEndPoint(MainGraph.Points[^1]);
                     GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
-                    Graph.AddLine(newLine, Graph.Points[^1], ref curLine);
+                    MainGraph.AddLine(newLine, MainGraph.Points[^1], ref curLine);
                 }
             }
             else if (Input.GetMouseButtonUp(1))
@@ -73,7 +73,7 @@ namespace Assets.Scripts.GraphEditors
             }
             else if (curLine != null)
             {
-                Point curPoint = new Point(worldPlacementPos);
+                Point curPoint = new(worldPlacementPos);
                 curLine.SetEndPoint(curPoint);
             }
         }
@@ -82,9 +82,9 @@ namespace Assets.Scripts.GraphEditors
         {
             if (curLine == null) return;
             Destroy(curLine.LineObj);
-            Graph.Lines.Remove(curLine);
+            MainGraph.Lines.Remove(curLine);
             curLine = null;
-            Graph.SetLinkedLines();
+            MainGraph.SetLinkedLines();
         }
     }
 }

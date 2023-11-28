@@ -54,5 +54,11 @@ namespace Assets.Scripts.GraphComponents
             if (LinkedLines.Contains(line)) return;
             LinkedLines.Add(line);
         }
+
+        public bool IsStartPoint(Line line)
+        {
+            if (!LinkedLines.Contains(line)) return false;
+            return line.StartPoint == this;
+        }
     }
 }

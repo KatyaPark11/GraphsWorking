@@ -9,7 +9,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{77985387-ED50-F53C-8CB0-CE8876FB4746}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -60,6 +61,15 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.14f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\GraphTraversal\TraversalStepsGetting.cs" />
+    <Compile Include="Assets\Scripts\GraphTraversal\TraversalStep.cs" />
+    <Compile Include="Assets\Scripts\ShortestPath\ShortestPathStep.cs" />
+    <Compile Include="Assets\Scripts\ShortestPath\ShortestPathStepsGetting.cs" />
+    <Compile Include="Assets\Scripts\SpanningTree\SpanningTreeStep.cs" />
+    <Compile Include="Assets\Scripts\SpanningTree\SpanningTreeStepsGetting.cs" />
+    <Compile Include="Assets\Scripts\TransportNetwork\TransportStepsGetting.cs" />
+    <Compile Include="Assets\Scripts\TransportNetwork\TransportStep.cs" />
+    <Compile Include="Assets\Scripts\VarsHolder.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
@@ -1050,8 +1060,7 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

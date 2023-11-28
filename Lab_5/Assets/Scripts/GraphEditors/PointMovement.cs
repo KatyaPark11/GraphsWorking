@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts.GraphComponents;
+using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
 {
@@ -21,7 +22,7 @@ namespace Assets.Scripts.GraphEditors
                     {
                         GameObject go = hit.collider.gameObject;
                         int pointIndex = char.Parse(go.name) - 'A';
-                        draggingPoint = ObjectPlacement.Graph.Points[pointIndex];
+                        draggingPoint = MainGraph.Points[pointIndex];
                     }
                     isObjectSelected = true;
                 }
@@ -36,7 +37,7 @@ namespace Assets.Scripts.GraphEditors
                 draggingPoint.Position = worldPlacementPos;
                 foreach (Line line in draggingPoint.LinkedLines)
                 {
-                    if (line.StartPoint == draggingPoint)
+                    if (draggingPoint.IsStartPoint(line))
                         line.SetStartPoint(draggingPoint);
                     else
                         line.SetEndPoint(draggingPoint);
