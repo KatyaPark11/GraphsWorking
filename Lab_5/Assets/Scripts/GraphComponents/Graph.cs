@@ -17,8 +17,10 @@ namespace Assets.Scripts.GraphComponents
         /// Список точек, из которых состоит граф.
         /// </summary>
         public List<Point> Points { get; set; }
-        public bool IsDirectionVisible { get; private set; }
-        public bool IsWeightVisible { get; private set; }
+        /// <summary>
+        /// Тип графа.
+        /// </summary>
+        public string Type { get; set; } = "Обычный граф";
         /// <summary>
         /// Максимально допустимое число точек.
         /// </summary>
@@ -28,7 +30,7 @@ namespace Assets.Scripts.GraphComponents
         /// Конструктор класса для создания нового графа.
         /// </summary>
         public Graph() 
-        { 
+        {
             Lines = new List<Line>();
             Points = new List<Point>();
         }
