@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Assets.Scripts.Controllers;
+using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.GraphComponents
@@ -123,6 +124,15 @@ namespace Assets.Scripts.GraphComponents
 
                 ArrowRenderer.SetPositions(arrowPositions);
             }
+        }
+
+        public void SetLineColor(Color color)
+        {
+            if (AreaController.CompareColor(LineRenderer.startColor, color)) return;
+            LineRenderer.startColor = color;
+            LineRenderer.endColor = color;
+            ArrowRenderer.startColor = color;
+            ArrowRenderer.endColor = color;
         }
 
         private void SetWeightIFPosition()

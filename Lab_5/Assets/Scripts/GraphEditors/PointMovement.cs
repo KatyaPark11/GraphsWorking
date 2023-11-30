@@ -1,5 +1,7 @@
-using UnityEngine;
+using Assets.Scripts.Controllers;
 using Assets.Scripts.GraphComponents;
+using TMPro;
+using UnityEngine;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
@@ -23,13 +25,20 @@ namespace Assets.Scripts.GraphEditors
                         GameObject go = hit.collider.gameObject;
                         int pointIndex = char.Parse(go.name) - 'A';
                         draggingPoint = MainGraph.Points[pointIndex];
-                    }
-                    isObjectSelected = true;
+                        isObjectSelected = true;
+                    }                
                 }
             }
 
             if (isObjectSelected)
             {
+                if (AreaController.IsUnreachableArea())
+                    foreach (Line line in draggingPoint.LinkedLines)
+                        line.SetLineColor(Color.gray);
+                else
+                    foreach (Line line in draggingPoint.LinkedLines)
+                        line.SetLineColor(Color.red);
+
                 Vector3 worldPlacementPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 worldPlacementPos.z = 0;
 
@@ -46,8 +55,15 @@ namespace Assets.Scripts.GraphEditors
 
             if (Input.GetMouseButtonUp(0))
             {
-                if (isObjectSelected)
+                if (draggingPoint != null && AreaController.CompareColor(draggingPoint.LinkedLines[0].LineRenderer.startColor, Color.gray))
+                {
+                    return;
+                }
+                else if (isObjectSelected)
+                {
+                    draggingPoint = null;
                     isObjectSelected = false;
+                }
             }
         }
     }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Controllers;
 using Assets.Scripts.GraphComponents;
 using UnityEngine;
 using static Assets.Scripts.VarsHolder;
@@ -24,6 +25,16 @@ namespace Assets.Scripts.GraphEditors
 
             if (Input.GetMouseButtonUp(0))
             {
+                if (AreaController.IsUnreachableArea())
+                {
+                    curLine?.SetLineColor(Color.gray);
+                    return;
+                }
+                else
+                {
+                    curLine?.SetLineColor(Color.red);
+                }
+
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out RaycastHit hit))
@@ -31,8 +42,7 @@ namespace Assets.Scripts.GraphEditors
                     GameObject go = hit.collider.gameObject;
                     if (go.CompareTag("Point"))
                     {
-                        int pointIndex = char.Parse(go.name) - 'A';
-                        Point point = MainGraph.Points[pointIndex];
+                        Point point = MainGraph.GetPoint(go);
                         if (curLine == null)
                         {
                             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
@@ -73,6 +83,11 @@ namespace Assets.Scripts.GraphEditors
             }
             else if (curLine != null)
             {
+                if (AreaController.IsUnreachableArea())
+                    curLine.SetLineColor(Color.gray);
+                else
+                    curLine.SetLineColor(Color.red);
+
                 Point curPoint = new(worldPlacementPos);
                 curLine.SetEndPoint(curPoint);
             }

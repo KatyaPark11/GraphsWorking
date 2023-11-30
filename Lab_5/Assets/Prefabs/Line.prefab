@@ -402,6 +402,7 @@ GameObject:
   - component: {fileID: 7584063054122408912}
   - component: {fileID: 3375180156027976124}
   - component: {fileID: 4998613337123887352}
+  - component: {fileID: 3919453206758718310}
   m_Layer: 5
   m_Name: Weight
   m_TagString: Untagged
@@ -565,6 +566,21 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &3919453206758718310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4640621238554491002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f34c3a7b6db7821469c8796ae47e559b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMeshPro: {fileID: 4483864816735782833}
+  inputField: {fileID: 4998613337123887352}
+  rectTransform: {fileID: 4043709270174442261}
 --- !u!1001 &2324011323383111740
 PrefabInstance:
   m_ObjectHideFlags: 0

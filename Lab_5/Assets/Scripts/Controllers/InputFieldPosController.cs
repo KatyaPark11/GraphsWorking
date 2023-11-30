@@ -1,7 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 
-namespace Assets.Scripts.GraphEditors
+namespace Assets.Scripts.Controllers
 {
     public class InputFieldPosController : MonoBehaviour
     {

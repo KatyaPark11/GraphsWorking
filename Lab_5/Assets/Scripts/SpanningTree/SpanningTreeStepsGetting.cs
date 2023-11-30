@@ -18,7 +18,7 @@ namespace Assets.Scripts.SpanningTree
             * Поля, которые могут понадобиться:
             * point.LinkedLines 
             * line.Weight (В данном случае это вес линии)
-            * Метод, удаляющий линию из списка: graph.RemoveLine(int lineIndex); 
+            * Метод, удаляющий линию из списка: graph.RemoveLine(int lineIndex); второй параметр оставляем по умолчанию! 
             * Метод для проверки точки на то, является она начальной или конечной в указанной линии: point.IsStartPoint(Line line); */
             return new List<SpanningTreeStep>();
         }

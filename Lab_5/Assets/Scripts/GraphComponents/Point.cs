@@ -55,6 +55,16 @@ namespace Assets.Scripts.GraphComponents
             LinkedLines.Add(line);
         }
 
+        public void ClearLinkedLines()
+        {
+            foreach (Line line in LinkedLines)
+            {
+                RemoveLinkedLine(line);
+            }
+        }
+
+        public void RemoveLinkedLine(Line line) => LinkedLines.Remove(line);
+
         public bool IsStartPoint(Line line)
         {
             if (!LinkedLines.Contains(line)) return false;

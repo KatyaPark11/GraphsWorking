@@ -64,9 +64,32 @@ namespace Assets.Scripts.GraphComponents
             Lines.Add(line);
         }
 
-        public void RemoveLine(int lineIndex)
+        public void RemovePoint(GameObject go)
         {
-            Lines.RemoveAt(lineIndex);
+            Point point = GetPoint(go);
+            point.ClearLinkedLines();
+            Points.Remove(point);
+        }
+
+        public void RemoveLine(int lineIndex, bool isDeleteLinks = false)
+        {
+            Line line = Lines[lineIndex];
+            if (isDeleteLinks)
+            {
+                line.StartPoint.LinkedLines.Remove(line);
+                line.EndPoint.LinkedLines.Remove(line);
+                if (line.StartPoint.LinkedLines.Count == 0) 
+                    Points.Remove(line.StartPoint);
+                if (line.EndPoint.LinkedLines.Count == 0)
+                    Points.Remove(line.EndPoint);
+            }
+            Lines.Remove(line);
+        }
+
+        public Point GetPoint(GameObject go)
+        {
+            int pointIndex = char.Parse(go.name) - 'A';
+            return Points[pointIndex];
         }
 
         public void SetLinkedLines()
