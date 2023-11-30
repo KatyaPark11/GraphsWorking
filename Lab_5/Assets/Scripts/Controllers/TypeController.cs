@@ -49,18 +49,20 @@ namespace Assets.Scripts.Controllers
         {
             foreach (Line line in MainGraph.Lines)
             {
+                string newWeightFormat = $"0/{line.Weight}";
                 TMP_InputField weight = line.WeightIF;
-                weight.onValueChanged.AddListener(delegate { OnTransportWeightValueChanged(weight); });
+                weight.text = newWeightFormat;
+                weight.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(weight); });
             }
         }
 
-        private void OnTransportWeightValueChanged(TMP_InputField inputField)
+        private void OnTransportWeightValueChanged(TMP_InputField weight)
         {
-            string value = inputField.text;
+            string value = weight.text;
             string filteredValue = FilterTransportWeightInput(value);
             if (filteredValue != value)
             {
-                inputField.text = filteredValue;
+                weight.text = filteredValue;
             }
         }
 
