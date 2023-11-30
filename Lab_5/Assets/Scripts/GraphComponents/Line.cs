@@ -36,7 +36,7 @@ namespace Assets.Scripts.GraphComponents
         /// <summary>
         /// Вес/загруженность (в зависимости от типа графа) линии.
         /// </summary>
-        public int Weight { get; set; }
+        public string Weight { get; set; }
 
         private const float arrowSize = 20f;
         private const float arrowAngle = 30f;
@@ -47,7 +47,7 @@ namespace Assets.Scripts.GraphComponents
         /// <param name="startPoint">Начальная точка линии.</param>
         /// <param name="endPoint">Конечная точка линии.</param>
         /// <param name="weight">Вес линии.</param>
-        public Line(Point startPoint, Point endPoint, int weight = 0)
+        public Line(Point startPoint, Point endPoint, string weight = "0")
         {
             StartPoint = startPoint;
             EndPoint = endPoint;
@@ -61,18 +61,28 @@ namespace Assets.Scripts.GraphComponents
         /// <param name="startPoint">Начальная точка линии.</param>
         /// <param name="endPoint">Конечная точка линии.</param>
         /// <param name="weight">Вес линии.</param>
-        public Line(GameObject lineObj, Point startPoint, Point endPoint, int weight = 0)
+        public Line(GameObject lineObj, Point startPoint, Point endPoint, string type = "Обычный граф", string weight = "0")
         {
             LineObj = lineObj;
             LineRenderer[] lineRenderers = lineObj.GetComponentsInChildren<LineRenderer>();
             LineRenderer = lineRenderers[0];
-            LineRenderer.positionCount = 2;
             ArrowRenderer = lineRenderers[1];
-            ArrowRenderer.positionCount = 3;
             WeightIF = lineObj.GetComponentInChildren<TMP_InputField>();
+
+            if (type.Equals("Обычный граф"))
+            {
+                ArrowRenderer.gameObject.SetActive(false);
+                WeightIF.gameObject.SetActive(false);
+            }
+            else if (type.Equals("Транспортная сеть"))
+            {
+                weight = "0/0";
+            }
+
             StartPoint = startPoint;
             EndPoint = endPoint;
             Weight = weight;
+            WeightIF.text = weight;
             SetWeightIFPosition();
         }
 

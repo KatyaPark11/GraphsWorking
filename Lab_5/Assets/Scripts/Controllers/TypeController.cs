@@ -1,9 +1,11 @@
 ﻿using Assets.Scripts.GraphComponents;
+using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.Windows;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.Controllers
@@ -37,52 +39,95 @@ namespace Assets.Scripts.Controllers
 
         private void SetSimpleType()
         {
-
+            MainGraph.Type = "Обычный граф";
+            foreach (Line line in MainGraph.Lines)
+            {
+                line.WeightIF.gameObject.SetActive(false);
+                line.ArrowRenderer.gameObject.SetActive(false);
+                line.WeightIF.onEndEdit.RemoveAllListeners();
+            }
         }
 
         private void SetWeightedType()
         {
+            foreach (Line line in MainGraph.Lines)
+            {
+                TMP_InputField weightIF = line.WeightIF;
+                if (MainGraph.Type.Equals("Обычный граф"))
+                {
+                    weightIF.gameObject.SetActive(true);
+                    line.ArrowRenderer.gameObject.SetActive(true);
+                }
 
+                string weight = line.Weight;
+                string secondNum = weight[(weight.IndexOf('/') + 1)..];
+                if (int.TryParse(secondNum, out int num))
+                {
+                    line.Weight = num.ToString();
+                    weightIF.text = num.ToString();
+                }
+
+                weightIF.onEndEdit.RemoveAllListeners();
+                weightIF.onEndEdit.AddListener(delegate { OnWeightedLineWeightValueChanged(line.WeightIF, line); });
+            }
+            MainGraph.Type = "Взвешенный граф";
+        }
+
+        private void OnWeightedLineWeightValueChanged(TMP_InputField weightIF, Line line)
+        {
+            string value = weightIF.text;
+            if (int.TryParse(value, out _))
+                line.Weight = value;
+            if (line.Weight != value)
+                weightIF.text = line.Weight;
         }
 
         private void SetTransportNetworkType()
         {
             foreach (Line line in MainGraph.Lines)
             {
-                string newWeightFormat = $"0/{line.Weight}";
-                TMP_InputField weight = line.WeightIF;
-                weight.text = newWeightFormat;
-                weight.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(weight); });
+                TMP_InputField weightIF = line.WeightIF;
+                if (!IsTransportFormat(line.Weight))
+                {
+                    string newWeightFormat = $"0/{line.Weight}";
+                    line.Weight = newWeightFormat;
+                    weightIF.text = newWeightFormat;
+                }
+
+                weightIF.onEndEdit.RemoveAllListeners();
+                weightIF.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(weightIF, line); });
+
+                if (MainGraph.Type.Equals("Обычный граф"))
+                {
+                    weightIF.gameObject.SetActive(true);
+                    line.ArrowRenderer.gameObject.SetActive(true);
+                }
             }
+            MainGraph.Type = "Транспортная сеть";
         }
 
-        private void OnTransportWeightValueChanged(TMP_InputField weight)
+        private void OnTransportWeightValueChanged(TMP_InputField weightIF, Line line)
         {
-            string value = weight.text;
-            string filteredValue = FilterTransportWeightInput(value);
-            if (filteredValue != value)
-            {
-                weight.text = filteredValue;
-            }
+            string value = weightIF.text;
+            FilterTransportWeightInput(value, line);
+            if (line.Weight != value)
+                weightIF.text = line.Weight;
         }
 
-        private string FilterTransportWeightInput(string input)
+        private void FilterTransportWeightInput(string input, Line line)
         {
-            string filtered = "0/0";
-
             string[] parts = input.Split('/');
 
             if (parts.Length == 2)
-            {
                 if (int.TryParse(parts[0], out int usedNumOfUnits) && int.TryParse(parts[1], out int maxNumOfUnits))
-                {
                     if (usedNumOfUnits <= maxNumOfUnits)
-                    {
-                        filtered = input;
-                    }
-                }
-            }
-            return filtered;
+                        line.Weight = input;
+        }
+
+        private bool IsTransportFormat(string input)
+        {
+            string[] parts = input.Split('/');
+            return parts.Length == 2 && int.TryParse(parts[0], out _) && int.TryParse(parts[1], out _);
         }
     }
 }

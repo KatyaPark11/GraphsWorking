@@ -61,7 +61,7 @@ namespace Assets.Scripts.GraphComponents
 
         public void AddLine(GameObject newLineGO, Point point, ref Line line)
         {
-            line = new Line(newLineGO, point, point);
+            line = new Line(newLineGO, point, point, Type);
             line.SetLineRendererPos();
             Lines.Add(line);
         }

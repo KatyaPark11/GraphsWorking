@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6888646423925183366}
   - component: {fileID: 4731171656375354764}
   m_Layer: 5
-  m_Name: LineRenderer
+  m_Name: ArrowRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78,9 +78,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 3
