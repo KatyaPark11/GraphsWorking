@@ -1,18 +1,17 @@
 using Assets.Scripts.Controllers;
 using Assets.Scripts.GraphComponents;
-using TMPro;
 using UnityEngine;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
 {
-    public class PointMovement : MonoBehaviour
+    public class PointMovement : BaseEditor
     {
         private bool isObjectSelected = false;
         private RaycastHit hit;
         private Point draggingPoint;
 
-        void Update()
+        private void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -51,6 +50,7 @@ namespace Assets.Scripts.GraphEditors
                     else
                         line.SetEndPoint(draggingPoint);
                 }
+                MeshColliderController.UpdateMeshColliders();
             }
 
             if (Input.GetMouseButtonUp(0))
@@ -64,6 +64,10 @@ namespace Assets.Scripts.GraphEditors
                     draggingPoint = null;
                     isObjectSelected = false;
                 }
+            }
+            else if (Input.GetMouseButtonUp(1))
+            {
+                gameObject.SetActive(false);
             }
         }
     }

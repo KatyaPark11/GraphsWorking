@@ -1,6 +1,5 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class AutoExpandInputField : MonoBehaviour
 {
@@ -11,6 +10,7 @@ public class AutoExpandInputField : MonoBehaviour
     private void Start()
     {
         inputField.onValueChanged.AddListener(UpdateSize);
+        UpdateSize(textMeshPro.text);
     }
 
     private void UpdateSize(string text)

@@ -4,6 +4,6 @@ namespace Assets.Scripts
 {
     public static class VarsHolder
     {
-        public static Graph MainGraph;
+        public static Graph MainGraph = new();
     }
 }

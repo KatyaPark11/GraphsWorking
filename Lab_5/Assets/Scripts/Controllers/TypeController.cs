@@ -73,7 +73,7 @@ namespace Assets.Scripts.Controllers
             MainGraph.Type = "Взвешенный граф";
         }
 
-        private void OnWeightedLineWeightValueChanged(TMP_InputField weightIF, Line line)
+        public static void OnWeightedLineWeightValueChanged(TMP_InputField weightIF, Line line)
         {
             string value = weightIF.text;
             if (int.TryParse(value, out _))
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Controllers
             MainGraph.Type = "Транспортная сеть";
         }
 
-        private void OnTransportWeightValueChanged(TMP_InputField weightIF, Line line)
+        public static void OnTransportWeightValueChanged(TMP_InputField weightIF, Line line)
         {
             string value = weightIF.text;
             FilterTransportWeightInput(value, line);
@@ -114,7 +114,7 @@ namespace Assets.Scripts.Controllers
                 weightIF.text = line.Weight;
         }
 
-        private void FilterTransportWeightInput(string input, Line line)
+        private static void FilterTransportWeightInput(string input, Line line)
         {
             string[] parts = input.Split('/');
 

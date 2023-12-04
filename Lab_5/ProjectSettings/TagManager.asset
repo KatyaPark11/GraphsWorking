@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Point
   - Unreachable
+  - Line
   layers:
   - Default
   - TransparentFX
@@ -42,4 +43,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: LineTop
+    uniqueID: 1727836055
+    locked: 0
+  - name: Top
+    uniqueID: 1734219597
     locked: 0

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -7,28 +8,32 @@ namespace Assets.Scripts.GraphComponents
     /// <summary>
     /// Класс для реализации точки (вершины) графа.
     /// </summary>
+    [Serializable]
     public class Point
     {
         /// <summary>
         /// Игровой объект точки.
         /// </summary>
-        public GameObject PointObj { get; private set; }
+        [NonSerialized]
+        public readonly GameObject PointObj;
         /// <summary>
         /// Текст на игровом объекте, указывающий на название точки.
         /// </summary>
-        public TextMeshProUGUI NameTMP { get; private set; }
+        [NonSerialized]
+        public readonly TextMeshProUGUI NameTMP;
         /// <summary>
         /// Позиция точки.
         /// </summary>
-        public Vector3 Position { get; set; }
+        public Vector3 Position;
         /// <summary>
         /// Название точки.
         /// </summary>
-        public char Name { get; private set; }
+        public char Name;
         /// <summary>
         /// Связанные с точкой линии.
         /// </summary>
-        public List<Line> LinkedLines { get; private set; }
+        [NonSerialized]
+        public List<Line> LinkedLines;
 
         /// <summary>
         /// Конструктор класса без использования игрового объекта.
@@ -57,10 +62,8 @@ namespace Assets.Scripts.GraphComponents
 
         public void ClearLinkedLines()
         {
-            foreach (Line line in LinkedLines)
-            {
-                RemoveLinkedLine(line);
-            }
+            for (int i = 0; i < LinkedLines.Count; i++)
+                RemoveLinkedLine(LinkedLines[i]);
         }
 
         public void RemoveLinkedLine(Line line) => LinkedLines.Remove(line);

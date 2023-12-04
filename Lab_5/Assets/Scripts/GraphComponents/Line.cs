@@ -1,4 +1,6 @@
 ﻿using Assets.Scripts.Controllers;
+using System;
+using System.Net;
 using TMPro;
 using UnityEngine;
 
@@ -7,38 +9,52 @@ namespace Assets.Scripts.GraphComponents
     /// <summary>
     /// Класс для реализации линии (ребра) графа.
     /// </summary>
+    [Serializable]
     public class Line
     {
         /// <summary>
         /// Игровой объект линии.
         /// </summary>
-        public GameObject LineObj { get; private set; }
+        [NonSerialized]
+        public GameObject LineObj;
         /// <summary>
         /// Линия, соединяющая две точки линии.
         /// </summary>
-        public LineRenderer LineRenderer { get; private set; }
+        [NonSerialized]
+        public LineRenderer LineRenderer;
         /// <summary>
         /// Стрелка, указывающая направление линии.
         /// </summary>
-        public LineRenderer ArrowRenderer { get; private set; }
+        [NonSerialized]
+        public LineRenderer ArrowRenderer;
         /// <summary>
         /// Поле ввода для указания веса/загруженности (в зависимости от типа графа) линии.
         /// </summary>
-        public TMP_InputField WeightIF { get; private set; }
+        [NonSerialized]
+        public TMP_InputField WeightIF;
+        /// <summary>
+        /// Название линии.
+        /// </summary>
+        public string Name;
         /// <summary>
         /// Начальная точка линии.
         /// </summary>
-        public Point StartPoint { get; set; }
+        public Point StartPoint;
         /// <summary>
         /// Конечная точка линии.
         /// </summary>
-        public Point EndPoint { get; set; }
+        public Point EndPoint;
         /// <summary>
         /// Вес/загруженность (в зависимости от типа графа) линии.
         /// </summary>
-        public string Weight { get; set; }
+        public string Weight;
+        /// <summary>
+        /// Выбрана ли линия.
+        /// </summary>
+        [NonSerialized]
+        public bool IsSelected;
 
-        private const float arrowSize = 20f;
+        private const float arrowSize = 15f;
         private const float arrowAngle = 30f;
 
         /// <summary>
@@ -60,15 +76,12 @@ namespace Assets.Scripts.GraphComponents
         /// <param name="lineObj">Игровой объект линии.</param>
         /// <param name="startPoint">Начальная точка линии.</param>
         /// <param name="endPoint">Конечная точка линии.</param>
-        /// <param name="weight">Вес линии.</param>
-        public Line(GameObject lineObj, Point startPoint, Point endPoint, string type = "Обычный граф", string weight = "0")
+        public Line(GameObject lineObj, Point startPoint, Point endPoint, string type = "Обычный граф")
         {
-            LineObj = lineObj;
-            LineRenderer[] lineRenderers = lineObj.GetComponentsInChildren<LineRenderer>();
-            LineRenderer = lineRenderers[0];
-            ArrowRenderer = lineRenderers[1];
-            WeightIF = lineObj.GetComponentInChildren<TMP_InputField>();
+            string weight = "0";
+            ObjsInitialization(lineObj, startPoint, endPoint);
 
+            WeightIF = lineObj.GetComponentInChildren<TMP_InputField>();
             if (type.Equals("Обычный граф"))
             {
                 ArrowRenderer.gameObject.SetActive(false);
@@ -78,12 +91,38 @@ namespace Assets.Scripts.GraphComponents
             {
                 weight = "0/0";
             }
+            SetWeight(weight);
+        }
 
+        /// <summary>
+        /// Конструктор класса с использованием игрового объекта с уже заданным весом.
+        /// </summary>
+        /// <param name="lineObj">Игровой объект линии.</param>
+        /// <param name="startPoint">Начальная точка линии.</param>
+        /// <param name="endPoint">Конечная точка линии.</param>
+        /// <param name="weight">Вес линии.</param>
+        public Line(GameObject lineObj, Point startPoint, Point endPoint, string type = "Обычный граф", string weight = "0")
+        {
+            ObjsInitialization(lineObj, startPoint, endPoint);
+
+            WeightIF = lineObj.GetComponentInChildren<TMP_InputField>();
+            if (type.Equals("Обычный граф"))
+            {
+                ArrowRenderer.gameObject.SetActive(false);
+                WeightIF.gameObject.SetActive(false);
+            }
+            SetWeight(weight);
+        }
+
+        private void ObjsInitialization(GameObject lineObj, Point startPoint, Point endPoint)
+        {
+            LineObj = lineObj;
+            LineRenderer[] lineRenderers = lineObj.GetComponentsInChildren<LineRenderer>();
+            LineRenderer = lineRenderers[0];
+            ArrowRenderer = lineRenderers[1];
+            Name = lineObj.name;
             StartPoint = startPoint;
             EndPoint = endPoint;
-            Weight = weight;
-            WeightIF.text = weight;
-            SetWeightIFPosition();
         }
 
         public void GoToTheAnotherPoint(Point point)
@@ -97,6 +136,7 @@ namespace Assets.Scripts.GraphComponents
         {
             StartPoint = point;
             LineRenderer.SetPosition(0, StartPoint.Position);
+            LineObj.transform.position = StartPoint.Position;
             SetArrowRendererPos();
         }
 
@@ -113,7 +153,7 @@ namespace Assets.Scripts.GraphComponents
             LineRenderer.SetPosition(1, EndPoint.Position);
         }
 
-        private void SetArrowRendererPos()
+        public void SetArrowRendererPos()
         {
             Vector3[] linePositions = new Vector3[LineRenderer.positionCount];
             LineRenderer.GetPositions(linePositions);
@@ -145,11 +185,34 @@ namespace Assets.Scripts.GraphComponents
             ArrowRenderer.endColor = color;
         }
 
+        private void SetWeight(string weight)
+        {
+            Weight = weight;
+            WeightIF.text = weight;
+            SetWeightIFPosition();
+        }
+
         private void SetWeightIFPosition()
         {
             float coorX = (float)(StartPoint.Position.x + EndPoint.Position.x) / 2 - 10;
             float coorY = (float)(StartPoint.Position.y + EndPoint.Position.y) / 2 - 10;
             WeightIF.transform.position = new Vector3(coorX, coorY, 0);
+        }
+
+        public void LightOn()
+        {
+            IsSelected = true;
+            LineRenderer.sortingLayerName = "LineTop";
+            ArrowRenderer.sortingLayerName = "LineTop";
+            SetLineColor(Color.black);
+        }
+
+        public void LightOff()
+        {
+            IsSelected = false;
+            LineRenderer.sortingLayerName = "Default";
+            ArrowRenderer.sortingLayerName = "Default";
+            SetLineColor(Color.red);
         }
 
         public override bool Equals(object obj)
@@ -163,15 +226,6 @@ namespace Assets.Scripts.GraphComponents
                    ReferenceEquals(this.EndPoint, otherLine.EndPoint);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + (StartPoint != null ? StartPoint.GetHashCode() : 0);
-                hash = hash * 23 + (EndPoint != null ? EndPoint.GetHashCode() : 0);
-                return hash;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(17, StartPoint?.GetHashCode() ?? 0, EndPoint?.GetHashCode() ?? 0);
     }
 }

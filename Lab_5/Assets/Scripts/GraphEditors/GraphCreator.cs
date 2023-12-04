@@ -1,22 +1,20 @@
 using Assets.Scripts.Controllers;
 using Assets.Scripts.GraphComponents;
 using UnityEngine;
+using UnityEngine.UI;
+using static Assets.Scripts.Controllers.TypeController;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
 {
-    public class ObjectPlacement : MonoBehaviour
+    public class ObjectPlacement : BaseEditor
     {
         public GameObject PointPrefab;
-        public Canvas Canvas;
         public GameObject LinePrefab;
-        public GameObject PointMovement;
+        public Canvas PointsCanvas;
+        public Canvas LinesCanvas;
 
         private Line curLine;
-
-        private void OnEnable() => PointMovement.SetActive(false);
-
-        private void Start() => MainGraph = new Graph();
 
         private void Update()
         {
@@ -45,7 +43,7 @@ namespace Assets.Scripts.GraphEditors
                         Point point = MainGraph.GetPoint(go);
                         if (curLine == null)
                         {
-                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
+                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
                             MainGraph.AddLine(newLine, point, ref curLine);
                             return;
                         }
@@ -59,8 +57,9 @@ namespace Assets.Scripts.GraphEditors
                         else
                         {
                             curLine.SetEndPoint(point);
-                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
+                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
                             MainGraph.AddLine(newLine, point, ref curLine);
+                            AddListener();
                         }
                     }
                 }
@@ -69,16 +68,16 @@ namespace Assets.Scripts.GraphEditors
                     if (MainGraph.Points.Count > 0 && curLine == null) return;
                     else if (MainGraph.Points.Count >= Graph.MaxPointsCount) return;
 
-                    GameObject newPointGO = Instantiate(PointPrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
+                    GameObject newPointGO = Instantiate(PointPrefab, worldPlacementPos, Quaternion.identity, PointsCanvas.transform);
                     MainGraph.AddPoint(newPointGO);
                     curLine?.SetEndPoint(MainGraph.Points[^1]);
-                    GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, Canvas.transform);
+                    GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
                     MainGraph.AddLine(newLine, MainGraph.Points[^1], ref curLine);
+                    AddListener();
                 }
             }
             else if (Input.GetMouseButtonUp(1))
             {
-                PointMovement.SetActive(true);
                 gameObject.SetActive(false);
             }
             else if (curLine != null)
@@ -93,11 +92,28 @@ namespace Assets.Scripts.GraphEditors
             }
         }
 
-        private void OnDisable()
+        
+
+        private void AddListener()
         {
+            if (MainGraph.Type.Equals("Взвешенный граф"))
+                curLine.WeightIF.onEndEdit.AddListener(delegate { OnWeightedLineWeightValueChanged(curLine.WeightIF, curLine); });
+            else if (MainGraph.Type.Equals("Транспортная сеть"))
+                curLine.WeightIF.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(curLine.WeightIF, curLine); });
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (MainGraph.Points.Count == 1 && MainGraph.Points[0].LinkedLines.Count == 0)
+            {
+                Destroy(MainGraph.Points[0].PointObj);
+                MainGraph.Points.Clear();
+            }
             if (curLine == null) return;
             Destroy(curLine.LineObj);
             MainGraph.Lines.Remove(curLine);
+            MeshColliderController.UpdateMeshColliders();
             curLine = null;
             MainGraph.SetLinkedLines();
         }
