@@ -1,7 +1,9 @@
 ﻿using Assets.Scripts.GraphComponents;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -12,14 +14,15 @@ namespace Assets.Scripts.Controllers
 {
     public class TypeController : MonoBehaviour
     {
-        public TMP_Dropdown GraphType;
+        private static TMP_Dropdown GraphType;
 
         private void Start()
         {
+            GraphType = GetComponent<TMP_Dropdown>();
             GraphType.onValueChanged.AddListener(new UnityAction<int>(ChangeType));
         }
 
-        private void ChangeType(int value)
+        public static void ChangeType(int value)
         {
             string selectedType = GraphType.options[value].text;
 
@@ -37,7 +40,7 @@ namespace Assets.Scripts.Controllers
             }
         }
 
-        private void SetSimpleType()
+        private static void SetSimpleType()
         {
             MainGraph.Type = "Обычный граф";
             foreach (Line line in MainGraph.Lines)
@@ -46,9 +49,12 @@ namespace Assets.Scripts.Controllers
                 line.ArrowRenderer.gameObject.SetActive(false);
                 line.WeightIF.onEndEdit.RemoveAllListeners();
             }
+            foreach (KeyValuePair<string, Button> pair in ButNameAlgorithmLauncherMap)
+                if (pair.Value.interactable)
+                    pair.Value.interactable = false;
         }
 
-        private void SetWeightedType()
+        private static void SetWeightedType()
         {
             foreach (Line line in MainGraph.Lines)
             {
@@ -61,7 +67,7 @@ namespace Assets.Scripts.Controllers
 
                 string weight = line.Weight;
                 string secondNum = weight[(weight.IndexOf('/') + 1)..];
-                if (int.TryParse(secondNum, out int num))
+                if (int.TryParse(secondNum, out int num) && num >= 0)
                 {
                     line.Weight = num.ToString();
                     weightIF.text = num.ToString();
@@ -69,20 +75,28 @@ namespace Assets.Scripts.Controllers
 
                 weightIF.onEndEdit.RemoveAllListeners();
                 weightIF.onEndEdit.AddListener(delegate { OnWeightedLineWeightValueChanged(line.WeightIF, line); });
+                line.UpdateInputFieldPosition();
             }
             MainGraph.Type = "Взвешенный граф";
+            foreach (KeyValuePair<string, Button> pair in ButNameAlgorithmLauncherMap)
+            {
+                if (pair.Key.Equals("TransportNetwork") && pair.Value.interactable)
+                    pair.Value.interactable = false;
+                else if (!pair.Key.Equals("TransportNetwork"))
+                    pair.Value.interactable = true;
+            }
         }
 
         public static void OnWeightedLineWeightValueChanged(TMP_InputField weightIF, Line line)
         {
             string value = weightIF.text;
-            if (int.TryParse(value, out _))
+            if (int.TryParse(value, out int weight) && weight >= 0)
                 line.Weight = value;
             if (line.Weight != value)
                 weightIF.text = line.Weight;
         }
 
-        private void SetTransportNetworkType()
+        private static void SetTransportNetworkType()
         {
             foreach (Line line in MainGraph.Lines)
             {
@@ -102,8 +116,16 @@ namespace Assets.Scripts.Controllers
                     weightIF.gameObject.SetActive(true);
                     line.ArrowRenderer.gameObject.SetActive(true);
                 }
+                line.UpdateInputFieldPosition();
             }
             MainGraph.Type = "Транспортная сеть";
+            foreach (KeyValuePair<string, Button> pair in ButNameAlgorithmLauncherMap)
+            {
+                if ((pair.Key.Equals("AbjMatrix") || pair.Key.Equals("ShortestPath")) && pair.Value.interactable)
+                    pair.Value.interactable = false;
+                else if (!pair.Key.Equals("AbjMatrix") && !pair.Key.Equals("ShortestPath"))
+                    pair.Value.interactable = true;
+            }
         }
 
         public static void OnTransportWeightValueChanged(TMP_InputField weightIF, Line line)
@@ -120,11 +142,11 @@ namespace Assets.Scripts.Controllers
 
             if (parts.Length == 2)
                 if (int.TryParse(parts[0], out int usedNumOfUnits) && int.TryParse(parts[1], out int maxNumOfUnits))
-                    if (usedNumOfUnits <= maxNumOfUnits)
+                    if (usedNumOfUnits >= 0 && usedNumOfUnits <= maxNumOfUnits)
                         line.Weight = input;
         }
 
-        private bool IsTransportFormat(string input)
+        private static bool IsTransportFormat(string input)
         {
             string[] parts = input.Split('/');
             return parts.Length == 2 && int.TryParse(parts[0], out _) && int.TryParse(parts[1], out _);

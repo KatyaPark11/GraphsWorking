@@ -15,6 +15,9 @@ namespace Assets.Scripts.GraphEditors
         public Canvas LinesCanvas;
 
         private Line curLine;
+        private AreaController areaController;
+
+        private void Start() => areaController = new();
 
         private void Update()
         {
@@ -23,57 +26,20 @@ namespace Assets.Scripts.GraphEditors
 
             if (Input.GetMouseButtonUp(0))
             {
-                if (AreaController.IsUnreachableArea())
-                {
-                    curLine?.SetLineColor(Color.gray);
-                    return;
-                }
-                else
-                {
-                    curLine?.SetLineColor(Color.red);
-                }
-
+                areaController.SetCurAreaColor(curLine);
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     GameObject go = hit.collider.gameObject;
                     if (go.CompareTag("Point"))
-                    {
-                        Point point = MainGraph.GetPoint(go);
-                        if (curLine == null)
-                        {
-                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
-                            MainGraph.AddLine(newLine, point, ref curLine);
-                            return;
-                        }
-
-                        Line line = new(curLine.StartPoint, point);
-                        if (point == curLine.StartPoint) return;
-                        if (MainGraph.Lines.Contains(line))
-                        {
-                            curLine.GoToTheAnotherPoint(point);
-                        }
-                        else
-                        {
-                            curLine.SetEndPoint(point);
-                            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
-                            MainGraph.AddLine(newLine, point, ref curLine);
-                            AddListener();
-                        }
-                    }
+                        DoWithExistingPoint(worldPlacementPos, go);
                 }
                 else
                 {
                     if (MainGraph.Points.Count > 0 && curLine == null) return;
                     else if (MainGraph.Points.Count >= Graph.MaxPointsCount) return;
-
-                    GameObject newPointGO = Instantiate(PointPrefab, worldPlacementPos, Quaternion.identity, PointsCanvas.transform);
-                    MainGraph.AddPoint(newPointGO);
-                    curLine?.SetEndPoint(MainGraph.Points[^1]);
-                    GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
-                    MainGraph.AddLine(newLine, MainGraph.Points[^1], ref curLine);
-                    AddListener();
+                    CreateLineWithNewPoint(worldPlacementPos);
                 }
             }
             else if (Input.GetMouseButtonUp(1))
@@ -82,17 +48,61 @@ namespace Assets.Scripts.GraphEditors
             }
             else if (curLine != null)
             {
-                if (AreaController.IsUnreachableArea())
-                    curLine.SetLineColor(Color.gray);
-                else
-                    curLine.SetLineColor(Color.red);
-
-                Point curPoint = new(worldPlacementPos);
-                curLine.SetEndPoint(curPoint);
+                SetEndPosOfCurLine(worldPlacementPos);
             }
         }
 
-        
+        private void DoWithExistingPoint(Vector3 worldPlacementPos, GameObject go)
+        {
+            Point point = MainGraph.GetPoint(go);
+            if (curLine == null)
+            {
+                CreateLineWithNewStart(worldPlacementPos, point);
+                return;
+            }
+
+            Line line = new(curLine.StartPoint, point);
+            if (point == curLine.StartPoint) return;
+
+            if (MainGraph.Lines.Contains(line))
+                curLine.GoToTheAnotherPoint(point);
+            else
+                CreateLineBetweenExistingPoints(worldPlacementPos, point);
+        }
+
+        private void CreateLineWithNewStart(Vector3 worldPlacementPos, Point point)
+        {
+            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
+            MainGraph.AddLine(newLine, point, ref curLine);
+            curLine.WeightIF.gameObject.SetActive(false);
+        }
+
+        private void CreateLineBetweenExistingPoints(Vector3 worldPlacementPos, Point point)
+        {
+            curLine.SetEndPoint(point);
+            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
+            MainGraph.AddLine(newLine, point, ref curLine);
+            AddListener();
+            curLine.WeightIF.gameObject.SetActive(false);
+        }
+
+        private void CreateLineWithNewPoint(Vector3 worldPlacementPos)
+        {
+            GameObject newPointGO = Instantiate(PointPrefab, worldPlacementPos, Quaternion.identity, PointsCanvas.transform);
+            MainGraph.AddPoint(newPointGO);
+            curLine?.SetEndPoint(MainGraph.Points[^1]);
+            GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
+            MainGraph.AddLine(newLine, MainGraph.Points[^1], ref curLine);
+            AddListener();
+            curLine.WeightIF.gameObject.SetActive(false);
+        }
+
+        private void SetEndPosOfCurLine(Vector3 worldPlacementPos)
+        {
+            areaController.SetCurAreaColor(curLine);
+            Point curPoint = new(worldPlacementPos);
+            curLine.SetEndPoint(curPoint);
+        }
 
         private void AddListener()
         {
@@ -116,6 +126,7 @@ namespace Assets.Scripts.GraphEditors
             MeshColliderController.UpdateMeshColliders();
             curLine = null;
             MainGraph.SetLinkedLines();
+            int[,] adjacencyMatrix = MainGraph.GetAdjacencyMatrix();
         }
     }
 }

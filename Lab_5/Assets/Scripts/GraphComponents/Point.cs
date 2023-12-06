@@ -60,6 +60,17 @@ namespace Assets.Scripts.GraphComponents
             LinkedLines.Add(line);
         }
 
+        public void SetLinkedLinesPos()
+        {
+            foreach (Line line in LinkedLines)
+            {
+                if (IsStartPoint(line))
+                    line.SetStartPoint(this);
+                else
+                    line.SetEndPoint(this);
+            }
+        }
+
         public void ClearLinkedLines()
         {
             for (int i = 0; i < LinkedLines.Count; i++)

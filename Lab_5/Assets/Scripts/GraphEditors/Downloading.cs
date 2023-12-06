@@ -32,21 +32,34 @@ namespace Assets.Scripts.GraphEditors
             int graphTypeIndex = GraphType.options.FindIndex(option => option.text.Equals(graph.Type));
             GraphType.SetValueWithoutNotify(graphTypeIndex);
 
+            CreatePoints(graph);
+            CreateLines(graph);
+            graph.SetLinkedLines();
+            MainGraph = graph;
+            foreach (Line line in MainGraph.Lines)
+                line.UpdateInputFieldPosition();
+            MeshColliderController.UpdateMeshColliders();
+            TypeController.ChangeType(graphTypeIndex);
+        }
+
+        private void CreatePoints(Graph graph)
+        {
             foreach (Point point in MainGraph.Points)
             {
                 GameObject pointGO = Instantiate(PointPrefab, point.Position, Quaternion.identity, PointsCanvas.transform);
                 pointGO.name = point.Name.ToString();
                 graph.AddPoint(pointGO);
             }
+        }
+
+        private void CreateLines(Graph graph)
+        {
             foreach (Line line in MainGraph.Lines)
             {
                 GameObject lineGO = Instantiate(LinePrefab, line.StartPoint.Position, Quaternion.identity, LinesCanvas.transform);
                 lineGO.name = line.Name;
                 graph.AddLine(lineGO, graph.GetPoint(line.StartPoint.Name), graph.GetPoint(line.EndPoint.Name), MainGraph.Type, line.Weight);
             }
-            graph.SetLinkedLines();
-            MainGraph = graph;
-            MeshColliderController.UpdateMeshColliders();
         }
 
         private void ClearGraphObjs()

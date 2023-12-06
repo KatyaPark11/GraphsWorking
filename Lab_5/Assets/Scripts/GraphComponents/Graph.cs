@@ -209,6 +209,33 @@ namespace Assets.Scripts.GraphComponents
             UpdateLinesNames(0);
         }
 
+        public int[,] GetAdjacencyMatrix()
+        {
+            int matrixSize = Points.Count;
+            int[,] adjacencyMatrix = new int[matrixSize, matrixSize];
+
+            Dictionary<char, int> pointIndexMap = new();
+            int index = 0;
+            foreach (Point point in Points)
+            {
+                pointIndexMap.Add(point.Name, index);
+                index++;
+            }
+
+            foreach (Line line in Lines)
+            {
+                int startIndex = pointIndexMap[line.StartPoint.Name];
+                int endIndex = pointIndexMap[line.EndPoint.Name];
+                int weight;
+                if (Type.Equals("Транспортная сеть"))
+                    weight = int.Parse(line.Weight[(line.Weight.IndexOf('/') + 1)..]);
+                else
+                    weight = int.Parse(line.Weight);
+                adjacencyMatrix[startIndex, endIndex] = weight;
+            }
+            return adjacencyMatrix;
+        }
+
         public void SetLinkedLines()
         {
             foreach (Line line in Lines)

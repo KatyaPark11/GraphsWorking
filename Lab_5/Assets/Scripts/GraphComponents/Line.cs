@@ -178,7 +178,7 @@ namespace Assets.Scripts.GraphComponents
 
         public void SetLineColor(Color color)
         {
-            if (AreaController.CompareColor(LineRenderer.startColor, color)) return;
+            if (CompareColor(LineRenderer.startColor, color)) return;
             LineRenderer.startColor = color;
             LineRenderer.endColor = color;
             ArrowRenderer.startColor = color;
@@ -213,6 +213,26 @@ namespace Assets.Scripts.GraphComponents
             LineRenderer.sortingLayerName = "Default";
             ArrowRenderer.sortingLayerName = "Default";
             SetLineColor(Color.red);
+        }
+
+        public void UpdateInputFieldPosition()
+        {
+            Vector3 position1 = LineRenderer.GetPosition(0);
+            Vector3 position2 = LineRenderer.GetPosition(1);
+
+            Vector3 middlePosition = Vector3.Lerp(position1, position2, 0.75f);
+            WeightIF.transform.position = middlePosition;
+        }
+
+        public static bool CompareColor(Color a, Color b)
+        {
+            const float accdelta = 0.01f;
+            bool result = false;
+            if (Math.Abs(a.r - b.r) < accdelta)
+                if (Math.Abs(a.g - b.g) < accdelta)
+                    if (Math.Abs(a.b - b.b) < accdelta) result = true;
+
+            return result;
         }
 
         public override bool Equals(object obj)

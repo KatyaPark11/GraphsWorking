@@ -10,6 +10,9 @@ namespace Assets.Scripts.GraphEditors
         private bool isObjectSelected = false;
         private RaycastHit hit;
         private Point draggingPoint;
+        private AreaController areaController;
+
+        private void Start() => areaController = new();
 
         private void Update()
         {
@@ -19,43 +22,27 @@ namespace Assets.Scripts.GraphEditors
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    if (hit.collider.gameObject.CompareTag("Point"))
-                    {
-                        GameObject go = hit.collider.gameObject;
-                        int pointIndex = char.Parse(go.name) - 'A';
-                        draggingPoint = MainGraph.Points[pointIndex];
-                        isObjectSelected = true;
-                    }                
+                    GameObject hitGO = hit.collider.gameObject;
+                    if (hitGO.CompareTag("Point"))
+                        SetDraggingPoint(hitGO);
                 }
             }
 
             if (isObjectSelected)
             {
-                if (AreaController.IsUnreachableArea())
-                    foreach (Line line in draggingPoint.LinkedLines)
-                        line.SetLineColor(Color.gray);
-                else
-                    foreach (Line line in draggingPoint.LinkedLines)
-                        line.SetLineColor(Color.red);
-
+                areaController.SetCurAreaColor(draggingPoint);
                 Vector3 worldPlacementPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 worldPlacementPos.z = 0;
 
                 draggingPoint.PointObj.transform.position = worldPlacementPos;
                 draggingPoint.Position = worldPlacementPos;
-                foreach (Line line in draggingPoint.LinkedLines)
-                {
-                    if (draggingPoint.IsStartPoint(line))
-                        line.SetStartPoint(draggingPoint);
-                    else
-                        line.SetEndPoint(draggingPoint);
-                }
+                draggingPoint.SetLinkedLinesPos();
                 MeshColliderController.UpdateMeshColliders();
             }
 
             if (Input.GetMouseButtonUp(0))
             {
-                if (draggingPoint != null && AreaController.CompareColor(draggingPoint.LinkedLines[0].LineRenderer.startColor, Color.gray))
+                if (draggingPoint != null && Line.CompareColor(draggingPoint.LinkedLines[0].LineRenderer.startColor, Color.gray))
                 {
                     return;
                 }
@@ -69,6 +56,13 @@ namespace Assets.Scripts.GraphEditors
             {
                 gameObject.SetActive(false);
             }
+        }
+
+        private void SetDraggingPoint(GameObject hitGO)
+        {
+            int pointIndex = char.Parse(hitGO.name) - 'A';
+            draggingPoint = MainGraph.Points[pointIndex];
+            isObjectSelected = true;
         }
     }
 }

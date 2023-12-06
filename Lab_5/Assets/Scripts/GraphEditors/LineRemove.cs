@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphComponents
@@ -31,52 +30,15 @@ namespace Assets.Scripts.GraphComponents
                     if (!MainGraph.Type.Equals("Обычный граф"))
                     {
                         if (!MainGraph.TryGetLine(line.EndPoint, line.StartPoint, out Line reverseLine))
-                        {
-                            if (line.IsSelected)
-                            {
-                                line.LightOff();
-                            }
-                            else
-                            {
-                                line.LightOn();
-                            }
-                            return;
-                        }
+                            ComplexLight(line);
                         else
-                        {
-                            if (!line.IsSelected)
-                            {
-                                line.LightOn();
-                            }
-                            else if (line.IsSelected && !reverseLine.IsSelected)
-                            {
-                                line.LightOff();
-                                reverseLine.LightOn();
-                            }
-                            else
-                            {
-                                line.LightOff();
-                                reverseLine.LightOff();
-                            }
-                            return;
-                        }
+                            ComplexLight(line, reverseLine);
                     }
                     else
                     {
-                        if (line.IsSelected)
-                        {
-                            if (MainGraph.TryGetLine(line.EndPoint, line.StartPoint, out Line reverseLine))
-                                reverseLine.LightOff();
-                            line.LightOff();
-                        }
-                        else
-                        {
-                            if (MainGraph.TryGetLine(line.EndPoint, line.StartPoint, out Line reverseLine))
-                                reverseLine.LightOn();
-                            line.LightOn();
-                        }
-                        return;
+                        SimpleLight(line);
                     }
+                    return;
                 }
             }
             else if (Input.GetMouseButtonUp(1))
@@ -85,25 +47,68 @@ namespace Assets.Scripts.GraphComponents
             }
         }
 
+        private void ComplexLight(Line line)
+        {
+            if (line.IsSelected) line.LightOff();
+            else line.LightOn();
+        }
+
+        private void ComplexLight(Line line, Line reverseLine)
+        {
+            if (!line.IsSelected)
+            {
+                line.LightOn();
+            }
+            else if (line.IsSelected && !reverseLine.IsSelected)
+            {
+                line.LightOff();
+                reverseLine.LightOn();
+            }
+            else
+            {
+                line.LightOff();
+                reverseLine.LightOff();
+            }
+        }
+
+        private void SimpleLight(Line line)
+        {
+            if (line.IsSelected)
+            {
+                if (MainGraph.TryGetLine(line.EndPoint, line.StartPoint, out Line reverseLine))
+                    reverseLine.LightOff();
+                line.LightOff();
+            }
+            else
+            {
+                if (MainGraph.TryGetLine(line.EndPoint, line.StartPoint, out Line reverseLine))
+                    reverseLine.LightOn();
+                line.LightOn();
+            }
+        }
+
         private void RemoveLine(Line line)
         {
-            if (line.StartPoint.LinkedLines.Count == 1)
-            {
-                GameObject startPoint = line.StartPoint.PointObj;
-                MainGraph.RemovePoint(startPoint);
-                MainGraph.UpdatePointsNames(startPoint);
-                Destroy(startPoint);
-            }
-            if (line.EndPoint.LinkedLines.Count == 1)
-            {
-                GameObject endPoint = line.EndPoint.PointObj;
-                MainGraph.RemovePoint(endPoint);
-                MainGraph.UpdatePointsNames(endPoint);
-                Destroy(endPoint);
-            }
+            RemoveEmptyPoints(line);
             MainGraph.RemoveLine(line, true);
             MainGraph.UpdateLinesNames();
             Destroy(line.LineObj);
+        }
+
+        private void RemoveEmptyPoints(Line line)
+        {
+            if (line.StartPoint.LinkedLines.Count == 1)
+                RemoveEmptyPoint(line.StartPoint);
+            if (line.EndPoint.LinkedLines.Count == 1)
+                RemoveEmptyPoint(line.EndPoint);
+        }
+
+        private void RemoveEmptyPoint(Point point)
+        {
+            GameObject pointGO = point.PointObj;
+            MainGraph.RemovePoint(pointGO);
+            MainGraph.UpdatePointsNames(pointGO);
+            Destroy(pointGO);
         }
 
         protected override void OnDisable()

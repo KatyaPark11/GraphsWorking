@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Assets.Scripts.GraphComponents;
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.Controllers
 {
     public class AreaController
     {
-        public static bool IsUnreachableArea()
+        public bool IsUnreachableArea()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -17,15 +19,22 @@ namespace Assets.Scripts.Controllers
             return false;
         }
 
-        public static bool CompareColor(Color a, Color b)
+        public void SetCurAreaColor(Line line)
         {
-            const float accdelta = 0.01f;
-            bool result = false;
-            if (Math.Abs(a.r - b.r) < accdelta)
-                if (Math.Abs(a.g - b.g) < accdelta)
-                    if (Math.Abs(a.b - b.b) < accdelta) result = true;
+            if (IsUnreachableArea())
+                line?.SetLineColor(Color.gray);
+            else
+                line?.SetLineColor(Color.red);
+        }
 
-            return result;
+        public void SetCurAreaColor(Point point)
+        {
+            if (IsUnreachableArea())
+                foreach (Line line in point.LinkedLines)
+                    line.SetLineColor(Color.gray);
+            else
+                foreach (Line line in point.LinkedLines)
+                    line.SetLineColor(Color.red);
         }
     }
 }
