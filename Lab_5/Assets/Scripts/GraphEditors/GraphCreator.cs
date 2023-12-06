@@ -1,13 +1,12 @@
 using Assets.Scripts.Controllers;
 using Assets.Scripts.GraphComponents;
 using UnityEngine;
-using UnityEngine.UI;
 using static Assets.Scripts.Controllers.TypeController;
 using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.GraphEditors
 {
-    public class ObjectPlacement : BaseEditor
+    public class GraphCreator : BaseEditor
     {
         public GameObject PointPrefab;
         public GameObject LinePrefab;
@@ -74,6 +73,7 @@ namespace Assets.Scripts.GraphEditors
         {
             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
             MainGraph.AddLine(newLine, point, ref curLine);
+            AddListener(MainGraph.Lines[^1]);
             curLine.WeightIF.gameObject.SetActive(false);
         }
 
@@ -82,7 +82,7 @@ namespace Assets.Scripts.GraphEditors
             curLine.SetEndPoint(point);
             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
             MainGraph.AddLine(newLine, point, ref curLine);
-            AddListener();
+            AddListener(MainGraph.Lines[^1]);
             curLine.WeightIF.gameObject.SetActive(false);
         }
 
@@ -93,7 +93,7 @@ namespace Assets.Scripts.GraphEditors
             curLine?.SetEndPoint(MainGraph.Points[^1]);
             GameObject newLine = Instantiate(LinePrefab, worldPlacementPos, Quaternion.identity, LinesCanvas.transform);
             MainGraph.AddLine(newLine, MainGraph.Points[^1], ref curLine);
-            AddListener();
+            AddListener(MainGraph.Lines[^1]);
             curLine.WeightIF.gameObject.SetActive(false);
         }
 
@@ -104,12 +104,12 @@ namespace Assets.Scripts.GraphEditors
             curLine.SetEndPoint(curPoint);
         }
 
-        private void AddListener()
+        private void AddListener(Line line)
         {
             if (MainGraph.Type.Equals("Взвешенный граф"))
-                curLine.WeightIF.onEndEdit.AddListener(delegate { OnWeightedLineWeightValueChanged(curLine.WeightIF, curLine); });
+                line.WeightIF.onEndEdit.AddListener(delegate { OnWeightedLineWeightValueChanged(line); });
             else if (MainGraph.Type.Equals("Транспортная сеть"))
-                curLine.WeightIF.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(curLine.WeightIF, curLine); });
+                line.WeightIF.onEndEdit.AddListener(delegate { OnTransportWeightValueChanged(line); });
         }
 
         protected override void OnDisable()
@@ -126,7 +126,6 @@ namespace Assets.Scripts.GraphEditors
             MeshColliderController.UpdateMeshColliders();
             curLine = null;
             MainGraph.SetLinkedLines();
-            int[,] adjacencyMatrix = MainGraph.GetAdjacencyMatrix();
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using Assets.Scripts.Controllers;
 
 namespace Assets.Scripts.GraphComponents
 {

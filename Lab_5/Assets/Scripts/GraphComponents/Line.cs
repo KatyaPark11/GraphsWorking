@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Controllers;
-using System;
-using System.Net;
+﻿using System;
 using TMPro;
 using UnityEngine;
 

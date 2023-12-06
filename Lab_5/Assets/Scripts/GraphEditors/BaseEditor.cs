@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GraphComponents;
+﻿using Assets.Scripts.Controllers;
+using Assets.Scripts.GraphComponents;
 using UnityEngine;
 using UnityEngine.UI;
 using static Assets.Scripts.VarsHolder;
@@ -31,6 +32,19 @@ public abstract class BaseEditor : MonoBehaviour
         }
         if (!GraphType.interactable)
             GraphType.interactable = true;
+
+        switch (MainGraph.Type)
+        {
+            case "Обычный граф":
+                TypeController.InteractSimpleGraph();
+                break;
+            case "Взвешенный граф":
+                TypeController.InteractWeightedGraph();
+                break;
+            case "Транспортная сеть":
+                TypeController.InteractTransportNetwork();
+                break;
+        }
 
         if (!MainGraph.Type.Equals("Обычный граф"))
         {
