@@ -39,7 +39,7 @@ namespace Assets.Scripts.GraphComponents
         }
 
         /// <summary>
-        /// Конструктор класса для создания копии графа (ссылки на объекты сохраняются).
+        /// Конструктор класса для создания копии графа.
         /// </summary>
         /// <param name="lines">Список линий, из которых состоит граф.</param>
         /// <param name="points">Список точек, из которых состоит граф.</param>
@@ -47,6 +47,24 @@ namespace Assets.Scripts.GraphComponents
         {
             Lines = lines;
             Points = points;
+            /*List<Point> pointsCopy = new();
+            List<Line> linesCopy = new();
+            foreach (Point point in points)
+            {
+                pointsCopy.Add(new Point(point.Position));
+                pointsCopy[^1].Name = point.Name;
+                pointsCopy[^1].LinkedLines = new();
+            }
+            Points = pointsCopy;
+
+            foreach (Line line in lines)
+            {
+                int startPointIndex = GetPointIndex(line.StartPoint.Name);
+                int endPointIndex = GetPointIndex(line.EndPoint.Name);
+                linesCopy.Add(new Line(Points[startPointIndex], Points[endPointIndex], line.Weight));
+            }
+            Lines = linesCopy;
+            SetLinkedLines();*/
         }
 
         /// <summary>

@@ -11,10 +11,8 @@ public abstract class BaseEditor : MonoBehaviour
     protected virtual void OnEnable()
     {
         foreach (Button button in Buttons)
-        {
             if (button != Button && button.interactable)
                 button.interactable = false;
-        }
         if (GraphType.interactable)
             GraphType.interactable = false;
 
@@ -26,10 +24,8 @@ public abstract class BaseEditor : MonoBehaviour
     protected virtual void OnDisable()
     {
         foreach (Button button in Buttons)
-        {
             if (!button.interactable)
                 button.interactable = true;
-        }
         if (!GraphType.interactable)
             GraphType.interactable = true;
 

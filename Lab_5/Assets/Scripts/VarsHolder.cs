@@ -20,6 +20,10 @@ namespace Assets.Scripts
         public static Button[] Buttons;
         public static Dictionary<string, Button> ButNameAlgorithmLauncherMap;
         public static TMP_Dropdown GraphType;
+        public static int FromPointIndex;
+        public static int ToPointIndex;
+        public static int SourcePointIndex;
+        public static int SinkPointIndex;
 
         private void Start()
         {

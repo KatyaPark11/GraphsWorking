@@ -15,7 +15,7 @@ namespace Assets.Scripts.GraphComponents
         /// Игровой объект точки.
         /// </summary>
         [NonSerialized]
-        public readonly GameObject PointObj;
+        public GameObject PointObj;
         /// <summary>
         /// Текст на игровом объекте, указывающий на название точки.
         /// </summary>
