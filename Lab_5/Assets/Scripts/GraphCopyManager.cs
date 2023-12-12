@@ -52,6 +52,7 @@ namespace Assets.Scripts
 
         private void OnDisable()
         {
+            MainGraph = term;
             for (int i = 0; i < GraphCopy.Lines.Count; i++)
             {
                 Line line = MainGraph.Lines[i];
@@ -65,7 +66,6 @@ namespace Assets.Scripts
                 point.PointObj.SetActive(true);
             }
             GraphCopy = null;
-            MainGraph = term;
             Description.text = "Туть будут пояснения к алгоритму.";
             NextStepButton.interactable = true;
         }

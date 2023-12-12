@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\ObjDownloaders\FileManager.cs" />
     <Compile Include="Assets\Scripts\SceneChangers\BackSceneJump.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
+    <Compile Include="Assets\Scripts\ShortestPath\FromPointIndexGetting.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\Controllers\AlgActiveController.cs" />
     <Compile Include="Assets\Scripts\GraphEditors\BaseEditor.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
+    <Compile Include="Assets\Scripts\TransportNetwork\SinkPointIndexGetting.cs" />
     <Compile Include="Assets\Scripts\GraphCopyManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
     <Compile Include="Assets\Scripts\SceneChangers\SceneChanger.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\Scripts\GraphComponents\Point.cs" />
     <Compile Include="Assets\Scripts\GraphEditors\PointMovement.cs" />
+    <Compile Include="Assets\Scripts\ShortestPath\ToPointIndexGetting.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
@@ -125,6 +128,7 @@
     <Compile Include="Assets\Scripts\Controllers\AdjacencyMatrixController.cs" />
     <Compile Include="Assets\Scripts\ObjActiveSetting.cs" />
     <Compile Include="Assets\Scripts\GraphTraversal\TraversalStep.cs" />
+    <Compile Include="Assets\Scripts\TransportNetwork\SourcePointIndexGetting.cs" />
     <Compile Include="Assets\Scripts\AlgorithmManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Scripts\SpanningTree\SpanningTreeStepsGetting.cs" />

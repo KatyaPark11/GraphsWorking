@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GraphComponents;
+﻿using Assets.Scripts.Controllers;
+using Assets.Scripts.GraphComponents;
 using Assets.Scripts.GraphTraversal;
 using Assets.Scripts.ShortestPath;
 using Assets.Scripts.SpanningTree;
@@ -34,30 +35,9 @@ namespace Assets.Scripts
 
         public void DownloadShortestPath()
         {
-            NextStepButton.onClick.RemoveAllListeners();
-            NextStepButton.onClick.AddListener(DoShortestPathStep);
-            foreach (Point point in GraphCopy.Points)
-            {
-                GameObject backgroundGO = new("Background");
-                Image background = backgroundGO.AddComponent<Image>();
-                background.transform.SetParent(point.PointObj.transform);
-                background.GetComponent<RectTransform>().sizeDelta = new Vector2(15f, 15f);
-                backgroundGO.transform.SetParent(point.PointObj.transform);
-                background.transform.position = point.PointObj.transform.position + new Vector3(0, 20f, 0);
-
-                GameObject textObject = new("TextOverObject");
-                TextMeshProUGUI textMesh = textObject.AddComponent<TextMeshProUGUI>();
-                textMesh.text = "0";
-                textMesh.alignment = TextAlignmentOptions.Center;
-                textMesh.fontSize = 10;
-                textMesh.color = Color.blue;
-
-                textObject.transform.SetParent(backgroundGO.transform);
-                textMesh.transform.position = backgroundGO.transform.position;
-            }
-            ShortestPathSteps = ShortestPathStepsGetting.GetShortestPathSteps(GraphCopy, FromPointIndex, ToPointIndex);
-            CurrentStepsCount = ShortestPathSteps.Count;
-            CurrentStepNum = 0;
+            ShortestPathBegginer.SetActive(true);
+            Transform fromText = ShortestPathBegginer.transform.Find("FromText");
+            fromText.gameObject.SetActive(true);
         }
 
         public void DownloadSpanningTree()
@@ -71,11 +51,9 @@ namespace Assets.Scripts
 
         public void DownloadTransportNetwork()
         {
-            NextStepButton.onClick.RemoveAllListeners();
-            NextStepButton.onClick.AddListener(DoTransportStep);
-            TransportSteps = TransportStepsGetting.GetTransportSteps(GraphCopy, SourcePointIndex, SinkPointIndex);
-            CurrentStepsCount = TransportSteps.Count;
-            CurrentStepNum = 0;
+            TransportNetworkBegginer.SetActive(true);
+            Transform sourceText = TransportNetworkBegginer.transform.Find("SourceText");
+            sourceText.gameObject.SetActive(true);
         }
     }
 }

@@ -10,6 +10,10 @@ namespace Assets.Scripts
     {
         public Button[] SceneButtons;
         public TMP_Dropdown SceneGraphType;
+        public GameObject SceneShortestPathBegginer;
+        public GameObject SceneTransportNetworkBegginer;
+        public GameObject SceneSavableAlgActiveController;
+        public GameObject SceneUnsavableAlgActiveController;
         public int AbjacencyMatrixButIndex;
         public int DepthFirstTravButIndex;
         public int BreadthFirstTravButIndex;
@@ -20,6 +24,10 @@ namespace Assets.Scripts
         public static Button[] Buttons;
         public static Dictionary<string, Button> ButNameAlgorithmLauncherMap;
         public static TMP_Dropdown GraphType;
+        public static GameObject ShortestPathBegginer;
+        public static GameObject TransportNetworkBegginer;
+        public static GameObject SavableAlgActiveController;
+        public static GameObject UnsavableAlgActiveController;
         public static int FromPointIndex;
         public static int ToPointIndex;
         public static int SourcePointIndex;
@@ -37,6 +45,10 @@ namespace Assets.Scripts
                 { "ShortestPath", Buttons[ShortestPathButIndex] },
                 { "TransportNetwork", Buttons[TransportNetworkButIndex] }
             };
+            ShortestPathBegginer = SceneShortestPathBegginer;
+            TransportNetworkBegginer = SceneTransportNetworkBegginer;
+            SavableAlgActiveController = SceneSavableAlgActiveController;
+            UnsavableAlgActiveController = SceneUnsavableAlgActiveController;
         }
     }
 }
