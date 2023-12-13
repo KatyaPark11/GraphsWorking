@@ -1,10 +1,5 @@
-﻿using Assets.Scripts.Controllers;
-using Assets.Scripts.GraphComponents;
-using Assets.Scripts.GraphTraversal;
-using Assets.Scripts.ShortestPath;
+﻿using Assets.Scripts.GraphTraversal;
 using Assets.Scripts.SpanningTree;
-using Assets.Scripts.TransportNetwork;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Assets.Scripts.AlgorithmManager;
@@ -35,6 +30,7 @@ namespace Assets.Scripts
 
         public void DownloadShortestPath()
         {
+            TurnOffExtraObjs();
             ShortestPathBegginer.SetActive(true);
             Transform fromText = ShortestPathBegginer.transform.Find("FromText");
             fromText.gameObject.SetActive(true);
@@ -51,9 +47,19 @@ namespace Assets.Scripts
 
         public void DownloadTransportNetwork()
         {
+            TurnOffExtraObjs();
             TransportNetworkBegginer.SetActive(true);
             Transform sourceText = TransportNetworkBegginer.transform.Find("SourceText");
             sourceText.gameObject.SetActive(true);
+        }
+
+        private void TurnOffExtraObjs()
+        {
+            foreach (Button button in Buttons)
+                if (button.interactable)
+                    button.interactable = false;
+            if (GraphType.interactable)
+                GraphType.interactable = false;
         }
     }
 }

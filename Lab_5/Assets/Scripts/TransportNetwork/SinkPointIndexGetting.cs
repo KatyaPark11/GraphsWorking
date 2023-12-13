@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using static Assets.Scripts.AlgorithmManager;
 using static Assets.Scripts.GraphCopyManager;
 using static Assets.Scripts.VarsHolder;
@@ -25,6 +26,7 @@ namespace Assets.Scripts.TransportNetwork
                     if (go.CompareTag("Point"))
                     {
                         SinkPointIndex = MainGraph.GetPointIndex(go);
+                        TurnOnObjs();
                         TransportNetworkBegginer.SetActive(false);
                         SavableAlgActiveController.SetActive(true);
                         NextStepButton.onClick.RemoveAllListeners();
@@ -36,6 +38,15 @@ namespace Assets.Scripts.TransportNetwork
                     }
                 }
             }
+        }
+
+        private void TurnOnObjs()
+        {
+            foreach (Button button in Buttons)
+                if (!button.interactable)
+                    button.interactable = true;
+            if (!GraphType.interactable)
+                GraphType.interactable = true;
         }
     }
 }

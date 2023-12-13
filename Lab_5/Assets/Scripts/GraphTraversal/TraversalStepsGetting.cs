@@ -18,27 +18,52 @@ namespace Assets.Scripts.GraphTraversal
             traversalStepList = new();
             bool[] visited = new bool[graph.Points.Count];
             DFS('A', visited, graph);
-
-            /* Ваш кодик должен быть туть
-             * Поля, которые могут понадобиться:
-             * graph.Points[index].LinkedLines 
-             * Метод для проверки точки на то, является она начальной или конечной в указанной линии: point.IsStartPoint(Line line); */
             return traversalStepList;
         }
 
         public static void DFS(char v, bool[] visited, Graph graph)
         {
-            int index = FindIndex(v, graph);
+            int index = graph.GetPointIndex(v);
+            visited[index] = true;
 
             for (int i = 0; i < graph.Points[index].LinkedLines.Count; i++)
             {
-                if (!visited[index] || v == 'A')
+                Line curLine = graph.Points[index].LinkedLines[i];
+                int neighbourIndex = graph.GetPointIndex(curLine.EndPoint.Name);
+                if (!visited[neighbourIndex])
                 {
-                    visited[index] = true;
                     AddStepDFS(v, i, index, graph);
-                    DFS(graph.Points[i].LinkedLines[i].EndPoint.Name, visited, graph);
+                    DFS(curLine.EndPoint.Name, visited, graph);
                 }
             }
+        }
+
+        private static void AddStepDFS(char v, int lineIndex, int pointIndex, Graph graph)
+        {
+            string descNext;
+            string descPrev;
+
+            char targetVertex = graph.Points[pointIndex].LinkedLines[lineIndex].EndPoint.Name;
+            List<Line> LightedOnLines = new() { graph.Points[pointIndex].LinkedLines[lineIndex] };
+
+            if (lineIndex == 0)
+            {
+                descNext = "Всем вершинам графа присваивается статус не посещенной. " +
+                           "Начинаем обход с выбранной вершины и помечаем ее как посещенную.\r\n" +
+                           "Из вершины " + v + " переходим по первой смежной грани " +
+                           "к вершине " + targetVertex + " и помечаем ее как посещенную.";
+            }
+            else
+            {
+                descNext = "Из вершины " + v + " переходим по следующей смежной грани " +
+                           "к вершине " + targetVertex + " и помечаем ее как посещенную.";
+            }
+
+            descPrev = traversalStepList.Count > 0 ? "Вернулись к вершине " + v + " чтобы продолжить обход."
+                                                     : "Начало обхода с вершины " + v + ".";
+
+            TraversalStep traversalStep = new(LightedOnLines, null, descNext, descPrev);
+            traversalStepList.Add(traversalStep);
         }
 
         /// <summary>
@@ -48,105 +73,55 @@ namespace Assets.Scripts.GraphTraversal
         public static List<TraversalStep> GetBreadthFirstSteps(Graph graph)
         {
             traversalStepList = new();
-            BFS('A', graph.Points.Count, graph);
-
-            /* Ваш кодик должен быть туть
-             * Поля, которые могут понадобиться:
-             * graph.Points[index].LinkedLines
-             * Метод для проверки точки на то, является она начальной или конечной в указанной линии: point.IsStartPoint(Line line); */
+            bool[] visited = new bool[graph.Points.Count];
+            BFS('A', visited, graph);
             return traversalStepList;
         }
 
-        public static void BFS(char start, int amount, Graph graph)
+        public static void BFS(char start, bool[] visited, Graph graph)
         {
-            int index = FindIndex(start, graph);
-            bool[] visited = new bool[amount];
             Queue<char> queue = new();
-
-            visited[index] = true;
+            int startIndex = graph.GetPointIndex(start);
             queue.Enqueue(start);
+            visited[startIndex] = true;
 
-            while (queue.Count != 0)
+            while (queue.Count > 0)
             {
-                start = queue.Dequeue();
+                char current = queue.Dequeue();
+                int index = graph.GetPointIndex(current);
 
                 for (int i = 0; i < graph.Points[index].LinkedLines.Count; i++)
                 {
-                    char neighbor = graph.Points[index].LinkedLines[i].EndPoint.Name;
-                    int index1 = FindIndex(neighbor, graph);
-                    if (!visited[index1])
+                    Line curLine = graph.Points[index].LinkedLines[i];
+                    int neighbourIndex = graph.GetPointIndex(curLine.EndPoint.Name);
+
+                    if (!visited[neighbourIndex])
                     {
-                        AddStepBFS(start, i, index, graph);
-                        visited[index1] = true;
-                        queue.Enqueue(neighbor);
+                        queue.Enqueue(curLine.EndPoint.Name);
+                        visited[neighbourIndex] = true;
+                        AddStepBFS(current, i, index, graph);
                     }
                 }
             }
         }
 
-        private static void AddStepBFS(char v, int i, int index, Graph graph)
+        private static void AddStepBFS(char v, int lineIndex, int pointIndex, Graph graph)
         {
             string descNext;
             string descPrev;
-            List<Line> LightedOnLines = new() { graph.Points[index].LinkedLines[i] };
-            List<Line> LightedOffLines = new();
-            if (i != 0)
-            {
-                LightedOffLines.Add(graph.Points[index].LinkedLines[i - 1]);
-            }
-            else if (i == 0)
-            {
-                descNext = "Всем вершинам графа присваивается значение не посещенная. " +
-                    "Выбирается первая вершина и помечается как посещенная (и заносится в очередь)." +
-                    "Посещается первая вершина из очереди (если она не помечена как посещенная). " +
-                    "Все ее соседние вершины заносятся в очередь. После этого она удаляется из очереди." +
-                    $"Посещенной является вершина {v}, а не посещенной {graph.Points[index].LinkedLines[i].EndPoint.Name}.";
-            }
-            descNext = ". Посещается первая вершина из очереди (если она не помечена как посещенная). " +
-                    "Все ее соседние вершины заносятся в очередь. После этого она удаляется из очереди." +
-                    $"Посещенной является вершина {v}, а не посещенной {graph.Points[index].LinkedLines[i].EndPoint.Name}.";
+            List<Line> LightedOnLines = new() { graph.Points[pointIndex].LinkedLines[lineIndex] };
+            if (lineIndex == 0)
+                descNext = "Всем вершинам графа присваивается статус не посещенной. " +
+                    "Выбирается первая вершина и помечается как посещенная (и заносится в очередь). " +
+                    "Все ее соседние вершины заносятся в очередь, после чего она удаляется из очереди." +
+                    $"Посещенной является вершина {v}, а не посещенной {graph.Points[pointIndex].LinkedLines[lineIndex].EndPoint.Name}.";
+            else
+                descNext = "Посещается первая вершина из очереди (если она не помечена как посещенная). " +
+                        "Все ее соседние вершины заносятся в очередь, после чего она удаляется из очереди." +
+                        $"Посещенной является вершина {v}, а не посещенной {graph.Points[pointIndex].LinkedLines[lineIndex].EndPoint.Name}.";
             descPrev = "Вернулись на предыдущий этап.";
-            TraversalStep traversalStep = new(LightedOnLines, LightedOffLines, descNext, descPrev);
+            TraversalStep traversalStep = new(LightedOnLines, null, descNext, descPrev);
             traversalStepList.Add(traversalStep);
-        }
-
-        private static void AddStepDFS(char v, int i, int index, Graph graph)
-        {
-            string descNext;
-            string descPrev;
-            List<Line> LightedOnLines = new() { graph.Points[index].LinkedLines[i] };
-            List<Line> LightedOffLines = new();
-            if (i != 0)
-            {
-                LightedOffLines.Add(graph.Points[index].LinkedLines[i - 1]);
-            }
-            else if (i == 0)
-            {
-                descNext = "Всем вершинам графа присваивается значение не посещенная. " +
-                    "Выбирается первая вершина и помечается как посещенная.\r\n" +
-                    "Для последней помеченной как посещенная вершины выбирается смежная вершина, " +
-                    "являющаяся первой помеченной как не посещенная, и ей присваивается значение посещенная. " +
-                    $"Посещенной является вершина {v}, а не посещенной {graph.Points[index].LinkedLines[i].EndPoint.Name}.";
-            }
-            descNext = "Для последней помеченной как посещенная вершины выбирается смежная вершина, " +
-                    "являющаяся первой помеченной как не посещенная, и ей присваивается значение посещенная. " +
-                    $"Посещенной является вершина {v}, а не посещенной {graph.Points[index].LinkedLines[i].EndPoint.Name}.";
-            descPrev = "Вернулись на предыдущий этап.";
-            TraversalStep traversalStep = new(LightedOnLines, LightedOffLines, descNext, descPrev);
-            traversalStepList.Add(traversalStep);
-        }
-
-        private static int FindIndex(char v, Graph graph)
-        {
-            for (int j = 0; j < graph.Points.Count; j++)
-            {
-                char name = graph.Points[v - 'A'].Name;
-                if (v == name)
-                {
-                    return j;
-                }
-            }
-            return 0;
         }
     }
 }
