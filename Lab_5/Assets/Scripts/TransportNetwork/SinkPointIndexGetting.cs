@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.ShortestPath;
+﻿using Assets.Scripts.Controllers;
+using Assets.Scripts.ShortestPath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,9 @@ namespace Assets.Scripts.TransportNetwork
                     if (go.CompareTag("Point"))
                     {
                         SinkPointIndex = MainGraph.GetPointIndex(go);
-                        TurnOnObjs();
                         TransportNetworkBegginer.SetActive(false);
                         SavableAlgActiveController.SetActive(true);
+                        Buttons[SaveButIndex].interactable = true;
                         NextStepButton.onClick.RemoveAllListeners();
                         NextStepButton.onClick.AddListener(DoTransportStep);
                         TransportSteps = TransportStepsGetting.GetTransportSteps(GraphCopy, SourcePointIndex, SinkPointIndex);
@@ -38,15 +39,6 @@ namespace Assets.Scripts.TransportNetwork
                     }
                 }
             }
-        }
-
-        private void TurnOnObjs()
-        {
-            foreach (Button button in Buttons)
-                if (!button.interactable)
-                    button.interactable = true;
-            if (!GraphType.interactable)
-                GraphType.interactable = true;
         }
     }
 }

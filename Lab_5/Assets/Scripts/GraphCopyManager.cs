@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GraphComponents;
+﻿using Assets.Scripts.Controllers;
+using Assets.Scripts.GraphComponents;
 using Assets.Scripts.GraphTraversal;
 using Assets.Scripts.ShortestPath;
 using Assets.Scripts.SpanningTree;
@@ -27,6 +28,7 @@ namespace Assets.Scripts
             AlgorithmManager.Description = Description;
             AlgorithmManager.NextStepButton = NextStepButton;
             GraphCopy = new();
+            GraphCopy.Type = MainGraph.Type;
             for (int i = 0; i < MainGraph.Points.Count; i++)
             {
                 Point point = MainGraph.Points[i];
@@ -68,6 +70,29 @@ namespace Assets.Scripts
             GraphCopy = null;
             Description.text = "Туть будут пояснения к алгоритму.";
             NextStepButton.interactable = true;
+            TurnOnObjs();
+        }
+
+        private void TurnOnObjs()
+        {
+            foreach (Button button in Buttons)
+                if (!button.interactable)
+                    button.interactable = true;
+            if (!GraphType.interactable)
+                GraphType.interactable = true;
+
+            switch (MainGraph.Type)
+            {
+                case "Обычный граф":
+                    TypeController.InteractSimpleGraph();
+                    break;
+                case "Взвешенный граф":
+                    TypeController.InteractWeightedGraph();
+                    break;
+                case "Транспортная сеть":
+                    TypeController.InteractTransportNetwork();
+                    break;
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Assets.Scripts
         public int BreadthFirstTravButIndex;
         public int ShortestPathButIndex;
         public int TransportNetworkButIndex;
+        public int SceneSaveButIndex;
 
         public static Graph MainGraph = new();
         public static Button[] Buttons;
@@ -28,6 +29,7 @@ namespace Assets.Scripts
         public static GameObject TransportNetworkBegginer;
         public static GameObject SavableAlgActiveController;
         public static GameObject UnsavableAlgActiveController;
+        public static int SaveButIndex;
         public static int FromPointIndex;
         public static int ToPointIndex;
         public static int SourcePointIndex;
@@ -45,6 +47,7 @@ namespace Assets.Scripts
                 { "ShortestPath", Buttons[ShortestPathButIndex] },
                 { "TransportNetwork", Buttons[TransportNetworkButIndex] }
             };
+            SaveButIndex = SceneSaveButIndex;
             ShortestPathBegginer = SceneShortestPathBegginer;
             TransportNetworkBegginer = SceneTransportNetworkBegginer;
             SavableAlgActiveController = SceneSavableAlgActiveController;

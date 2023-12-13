@@ -174,7 +174,7 @@ namespace Assets.Scripts.GraphComponents
             }
         }
 
-        public void SetLineColor(Color color)
+        public void SetColor(Color color)
         {
             if (CompareColor(LineRenderer.startColor, color)) return;
             LineRenderer.startColor = color;
@@ -202,7 +202,7 @@ namespace Assets.Scripts.GraphComponents
             IsSelected = true;
             LineRenderer.sortingLayerName = "LineTop";
             ArrowRenderer.sortingLayerName = "LineTop";
-            SetLineColor(Color.black);
+            SetColor(Color.black);
         }
 
         public void LightOff()
@@ -210,7 +210,7 @@ namespace Assets.Scripts.GraphComponents
             IsSelected = false;
             LineRenderer.sortingLayerName = "Default";
             ArrowRenderer.sortingLayerName = "Default";
-            SetLineColor(Color.red);
+            SetColor(Color.red);
         }
 
         public void UpdateInputFieldPosition()

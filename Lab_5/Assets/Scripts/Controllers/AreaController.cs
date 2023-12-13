@@ -22,19 +22,19 @@ namespace Assets.Scripts.Controllers
         public void SetCurAreaColor(Line line)
         {
             if (IsUnreachableArea())
-                line?.SetLineColor(Color.gray);
+                line?.SetColor(Color.gray);
             else
-                line?.SetLineColor(Color.red);
+                line?.SetColor(Color.red);
         }
 
         public void SetCurAreaColor(Point point)
         {
             if (IsUnreachableArea())
                 foreach (Line line in point.LinkedLines)
-                    line.SetLineColor(Color.gray);
+                    line.SetColor(Color.gray);
             else
                 foreach (Line line in point.LinkedLines)
-                    line.SetLineColor(Color.red);
+                    line.SetColor(Color.red);
         }
     }
 }

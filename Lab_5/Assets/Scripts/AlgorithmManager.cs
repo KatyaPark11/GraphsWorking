@@ -33,10 +33,10 @@ namespace Assets.Scripts
             TraversalStep currentStep = TraversalSteps[CurrentStepNum];
             if (currentStep.LightedOffLines != null)
                 foreach (Line line in currentStep.LightedOffLines)
-                    line.SetLineColor(Color.red);
+                    line.LightOff();
             if (currentStep.LightedOnLines != null)
                 foreach (Line line in currentStep.LightedOnLines)
-                    line.SetLineColor(Color.black);
+                    line.LightOn();
             Description.text = currentStep.DescNext;
             CurrentStepNum++;
             ControlStepButton();
@@ -53,10 +53,10 @@ namespace Assets.Scripts
             ShortestPathStep currentStep = ShortestPathSteps[CurrentStepNum];
             if (currentStep.LightedOffLines != null)
                 foreach (Line line in currentStep.LightedOffLines)
-                    line.SetLineColor(Color.red);
+                    line.LightOff();
             if (currentStep.LightedOnLines != null)
                 foreach (Line line in currentStep.LightedOnLines)
-                    line.SetLineColor(Color.black);
+                    line.LightOn();
             if (currentStep.PointShortestPathPairs != null)
             {
                 foreach (KeyValuePair<Point, int> pair in currentStep.PointShortestPathPairs)
@@ -81,10 +81,10 @@ namespace Assets.Scripts
             SpanningTreeStep currentStep = SpanningTreeSteps[CurrentStepNum];
             if (currentStep.LightedOffLines != null)
                 foreach (Line line in currentStep.LightedOffLines)
-                    line.SetLineColor(Color.red);
+                    line.LightOff();
             if (currentStep.LightedOnLines != null)
                 foreach (Line line in currentStep.LightedOnLines)
-                    line.SetLineColor(Color.black);
+                    line.LightOn();
             if (currentStep.RemovedLines != null)
                 foreach (Line line in currentStep.RemovedLines)
                     RemoveLine(line);
@@ -111,13 +111,19 @@ namespace Assets.Scripts
             TransportStep currentStep = TransportSteps[CurrentStepNum];
             if (currentStep.LightedOffLines != null)
                 foreach (Line line in currentStep.LightedOffLines)
-                    line.SetLineColor(Color.red);
+                    line.LightOff();
             if (currentStep.LightedOnLines != null)
                 foreach (Line line in currentStep.LightedOnLines)
-                    line.SetLineColor(Color.black);
+                    line.LightOn();
             if (currentStep.LineUsedNumOfUnitsPairs != null)
+            {
                 foreach (KeyValuePair<Line, int> pair in currentStep.LineUsedNumOfUnitsPairs)
-                    pair.Key.Weight = pair.Value.ToString() + pair.Key.Weight[(pair.Key.Weight.IndexOf('/') + 1)..];
+                {
+                    string newWeight = pair.Value.ToString() + '/' + pair.Key.Weight[(pair.Key.Weight.IndexOf('/') + 1)..];
+                    pair.Key.Weight = newWeight;
+                    pair.Key.WeightIF.text = newWeight;
+                }
+            }
             Description.text = currentStep.DescNext;
             CurrentStepNum++;
             ControlStepButton();

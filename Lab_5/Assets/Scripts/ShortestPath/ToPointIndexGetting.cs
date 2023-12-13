@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.GraphComponents;
+﻿using Assets.Scripts.Controllers;
+using Assets.Scripts.GraphComponents;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,9 +23,9 @@ namespace Assets.Scripts.ShortestPath
                     if (go.CompareTag("Point"))
                     {
                         ToPointIndex = MainGraph.GetPointIndex(go);
-                        TurnOnObjs();
                         ShortestPathBegginer.SetActive(false);
                         UnsavableAlgActiveController.SetActive(true);
+                        Buttons[SaveButIndex].interactable = true;
                         NextStepButton.onClick.RemoveAllListeners();
                         NextStepButton.onClick.AddListener(DoShortestPathStep);
                         CreateTextsOverPoints();
@@ -57,15 +58,6 @@ namespace Assets.Scripts.ShortestPath
                 textObject.transform.SetParent(backgroundGO.transform);
                 textMesh.transform.position = backgroundGO.transform.position;
             }
-        }
-
-        private void TurnOnObjs()
-        {
-            foreach (Button button in Buttons)
-                if (!button.interactable)
-                    button.interactable = true;
-            if (!GraphType.interactable)
-                GraphType.interactable = true;
         }
     }
 }

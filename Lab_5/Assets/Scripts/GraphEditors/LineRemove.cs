@@ -120,7 +120,7 @@ namespace Assets.Scripts.GraphComponents
                     line.IsSelected = false;
                     line.LineRenderer.sortingLayerName = "Default";
                     line.ArrowRenderer.sortingLayerName = "Default";
-                    line.SetLineColor(Color.red);
+                    line.SetColor(Color.red);
                 }
             }
             base.OnDisable();
