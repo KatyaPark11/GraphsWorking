@@ -56,15 +56,17 @@ namespace Assets.Scripts
         {
             MainGraph = term;
             for (int i = 0; i < GraphCopy.Lines.Count; i++)
+                Destroy(GraphCopy.Lines[i].LineObj);
+            for (int i = 0; i < GraphCopy.Points.Count; i++)
+                Destroy(GraphCopy.Points[i].PointObj);
+            for (int i = 0; i < MainGraph.Lines.Count; i++)
             {
                 Line line = MainGraph.Lines[i];
-                Destroy(GraphCopy.Lines[i].LineObj);
                 line.LineObj.SetActive(true);
             }
-            for (int i = 0; i < GraphCopy.Points.Count; i++)
+            for (int i = 0; i < MainGraph.Points.Count; i++)
             {
                 Point point = MainGraph.Points[i];
-                Destroy(GraphCopy.Points[i].PointObj);
                 point.PointObj.SetActive(true);
             }
             GraphCopy = null;

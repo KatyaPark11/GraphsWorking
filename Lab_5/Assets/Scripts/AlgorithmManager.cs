@@ -72,6 +72,7 @@ namespace Assets.Scripts
 
         public static void DoSpanningTreeStep()
         {
+            List<SpanningTreeStep> pyp = SpanningTreeSteps;
             if (SpanningTreeSteps == null) return;
             if (SpanningTreeSteps.Count == 0)
             {

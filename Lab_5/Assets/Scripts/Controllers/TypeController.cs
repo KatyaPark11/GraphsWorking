@@ -51,8 +51,7 @@ namespace Assets.Scripts.Controllers
         public static void InteractSimpleGraph()
         {
             foreach (KeyValuePair<string, Button> pair in ButNameAlgorithmLauncherMap)
-                if (pair.Value.interactable)
-                    pair.Value.interactable = false;
+                pair.Value.interactable = false;
         }
 
         private static void SetWeightedType()

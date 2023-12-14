@@ -18,6 +18,7 @@ namespace Assets.Scripts
         public int DepthFirstTravButIndex;
         public int BreadthFirstTravButIndex;
         public int ShortestPathButIndex;
+        public int SpanningTreeButIndex;
         public int TransportNetworkButIndex;
         public int SceneSaveButIndex;
 
@@ -45,6 +46,7 @@ namespace Assets.Scripts
                 { "DephtFirstTrav", Buttons[DepthFirstTravButIndex] },
                 { "BreadthFirstTrav", Buttons[BreadthFirstTravButIndex] },
                 { "ShortestPath", Buttons[ShortestPathButIndex] },
+                { "SpanningTree", Buttons[SpanningTreeButIndex] },
                 { "TransportNetwork", Buttons[TransportNetworkButIndex] }
             };
             SaveButIndex = SceneSaveButIndex;

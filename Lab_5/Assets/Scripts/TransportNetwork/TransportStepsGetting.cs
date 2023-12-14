@@ -40,7 +40,8 @@ namespace Assets.Scripts.TransportNetwork
             int[,] graphMatrix = new int[graph.Points.Count, graph.Points.Count];
             for (int i = 0; i < graph.Lines.Count; i++)
             {
-                graphMatrix[graph.GetPointIndex(graph.Lines[i].StartPoint.Name), graph.GetPointIndex(graph.Lines[i].EndPoint.Name)] = int.Parse(graph.Lines[i].Weight.Split('/')[1]);
+                graphMatrix[graph.GetPointIndex(graph.Lines[i].StartPoint.Name),
+                    graph.GetPointIndex(graph.Lines[i].EndPoint.Name)] = int.Parse(graph.Lines[i].Weight.Split('/')[1]);
             }
 
             int[] parent = new int[graph.Points.Count];
@@ -109,7 +110,7 @@ namespace Assets.Scripts.TransportNetwork
         private static bool BFS(int source, int sink, int[] parent, int countPoint, int[,] residualGraph)
         {
             bool[] visited = new bool[countPoint];
-            Queue<int> queue = new Queue<int>();
+            Queue<int> queue = new();
             queue.Enqueue(source);
             visited[source] = true;
             parent[source] = -1;
