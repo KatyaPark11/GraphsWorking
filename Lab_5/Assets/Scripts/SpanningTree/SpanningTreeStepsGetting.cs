@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.GraphComponents;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Assets.Scripts.SpanningTree
 {
@@ -48,40 +49,7 @@ namespace Assets.Scripts.SpanningTree
                 graphKruskal.AddEdge(point1, point2, int.Parse(graph.Lines[i].Weight));
             }
 
-            spanningTreeStep = graphKruskal.MinimumSpanningTree(graph);
-
-            string DescNext = "Остальные пути удаляем, так как они принадлежат какому-то множеству.";
-            string DescPrev = "";
-            List<Line> lightedOnLines = new();
-            List<Line> lightedOffLines = new();
-            List<Line> removedLines = new();
-
-            int s = 0;
-            for (int k = 0; k < graph.Points.Count; k++)
-            {
-                for (int j = 0; j < graph.Points[k].LinkedLines.Count; j++)
-                {
-                    foreach (var steps in spanningTreeStep)
-                    {
-                        for (int u = 0; u < steps.LightedOnLines.Count; u++)
-                        {
-                            if (steps.LightedOnLines[u] == graph.Points[k].LinkedLines[j])
-                            {
-                                s = 1;
-                            }
-                        }
-                    }
-                    if (s == 0)
-                    {
-                        removedLines.Add(graph.Points[k].LinkedLines[j]);
-                    }
-                    s = 0;
-                }
-            }
-
-            SpanningTreeStep spanningTree = new(lightedOnLines, lightedOffLines, removedLines, DescNext, DescPrev);
-            spanningTreeStep.Add(spanningTree);
-            return spanningTreeStep;
+            return graphKruskal.MinimumSpanningTree(graph);
         }
     }
 
@@ -89,7 +57,7 @@ namespace Assets.Scripts.SpanningTree
     {
         public static List<SpanningTreeStep> spanningTreeSteps;
         int V;
-        List<Edge> edges;
+        private readonly List<Edge> edges;
 
         public KruskalAlgorithm(int v)
         {
@@ -160,10 +128,11 @@ namespace Assets.Scripts.SpanningTree
         public List<SpanningTreeStep> MinimumSpanningTree(Graph graph)
         {
             spanningTreeSteps = new();
-            string DescNext;
-            string DescPrev = "";
+            string DescNext = "";
+            List<Line> removedLines = new();
+            List<Line> lightedOnLines = new();
 
-            List<Edge> result = new List<Edge>();
+            List<Edge> result = new();
             int i = 0, e = 0;
             edges.Sort((a, b) => a.Weight.CompareTo(b.Weight));
 
@@ -172,25 +141,43 @@ namespace Assets.Scripts.SpanningTree
             {
                 subsets[v] = new Subset { Parent = v, Rank = 0 };
             }
+            DescNext += "Сортируем вес ребер по возрастанию. Начинаем с наименьшего веса. ";
+            List<Line> prevRemovedLines = new();
 
             while (e < V - 1)
             {
-                List<Line> lightedOnLines = new List<Line>();
-                List<Line> lightedOffLines = new List<Line>();
-                List<Line> removedLines = new List<Line>();
+                List<Line> lightedOffLines = new();
 
                 Edge nextEdge = edges[i++];
 
                 int x = Find(subsets, nextEdge.Source);
                 int y = Find(subsets, nextEdge.Destination);
-                DescNext = $"Проверяем лежат ли вершины {graph.Points[nextEdge.Destination].Name} " +
-                    $"и {graph.Points[nextEdge.Source].Name} в разных подмножествах. ";
+
+                DescNext += $"Подмножества: {WriteLine(graph, subsets)}";
+                DescNext = DescNext + $"\nПроверяем лежат ли вершины {graph.Points[nextEdge.Destination].Name} " +
+                           $"и {graph.Points[nextEdge.Source].Name} в разных подмножествах. Вес их ребра - {nextEdge.Weight}. ";
+
+                Point startPoint = graph.Points[nextEdge.Source];
+                Point endPoint = graph.Points[nextEdge.Destination];
+                graph.TryGetLine(startPoint, endPoint, out Line foundLine1);
+                graph.TryGetLine(endPoint, startPoint, out Line foundLine2);
+                if (foundLine1 != null)
+                    lightedOnLines.Add(foundLine1);
+                if (foundLine2 != null)
+                    lightedOnLines.Add(foundLine2);
+
+                if (prevRemovedLines.Count > 0)
+                {
+                    lightedOffLines.AddRange(prevRemovedLines);
+                    foreach (Line line in prevRemovedLines)
+                        lightedOnLines.Remove(line);
+                }
+                prevRemovedLines = new();
 
                 if (x != y)
                 {
-                    DescNext = $"{DescNext}Вершины находятся в разных подмножествах, значит, ребро между ними оставляем";
-
-                    lightedOnLines = Add(graph, lightedOnLines, nextEdge.Source, nextEdge.Destination);
+                    DescNext = $"{DescNext}Вершины находятся в разных подмножествах, значит, ребро между ними оставляем " +
+                               $"и соединяем их в одно подмножество.";
                     result.Add(nextEdge);
                     Union(subsets, x, y);
 
@@ -198,17 +185,101 @@ namespace Assets.Scripts.SpanningTree
                 }
                 else
                 {
-                    DescNext += $"Вершины находятся в одном подмножестве, значит, ребро между ними удаляем";
-                    removedLines = Add(graph, lightedOnLines, nextEdge.Source, nextEdge.Destination);
+                    DescNext += $"Вершины находятся в одном подмножестве, значит, ребро между ними не учитываем.";
+                    if (foundLine1 != null)
+                    {
+                        prevRemovedLines.Add(foundLine1);
+                        removedLines.Add(foundLine1);
+                    }
+                    if (foundLine2 != null)
+                    {
+                        prevRemovedLines.Add(foundLine2);
+                        removedLines.Add(foundLine2);
+                    }
                 }
 
-                SpanningTreeStep spanningTree = new(lightedOnLines, lightedOffLines, removedLines, DescNext, DescPrev);
+                List<Line> lightedOnLinesCopy = new(lightedOnLines);
+                SpanningTreeStep spanningTree = new(lightedOnLinesCopy, lightedOffLines, null, DescNext);
                 spanningTreeSteps.Add(spanningTree);
                 DescNext = "";
             }
 
+            AddStep(graph, subsets, removedLines);
             return spanningTreeSteps;
         }
+
+        private void AddStep(Graph graph, Subset[] subsets, List<Line> removedLines)
+        {
+            string DescNext = $"Подмножества: {WriteLine(graph, subsets)}\n";
+            DescNext += "Остальные пути нам не нужны, так как все вершины уже лежат в одном подмножестве. " +
+                        "Таким образом, выделенные рёбра составляют минимальное остовное дерево.";
+            List<Line> lightedOnLines = new();
+            List<Line> lightedOffLines = new();
+
+            int s = 0;
+            for (int k = 0; k < graph.Points.Count; k++)
+            {
+                for (int j = 0; j < graph.Points[k].LinkedLines.Count; j++)
+                {
+                    foreach (var steps in spanningTreeSteps)
+                    {
+                        for (int u = 0; u < steps.LightedOnLines.Count; u++)
+                        {
+                            if (steps.LightedOnLines[u] == graph.Points[k].LinkedLines[j])
+                            {
+                                s = 1;
+                            }
+                        }
+                    }
+                    if (s == 0)
+                    {
+                        removedLines.Add(graph.Points[k].LinkedLines[j]);
+                    }
+                    s = 0;
+                }
+            }
+
+            SpanningTreeStep spanningTree = new(lightedOnLines, lightedOffLines, removedLines, DescNext);
+            spanningTreeSteps.Add(spanningTree);
+        }
+
+        private string WriteLine(Graph graph, Subset[] subsets)
+        {
+            string line = "";
+            string[] strArray = new string[graph.Points.Count];
+            int[] array = GetVertexSets(subsets);
+            for (int j = 0; j < array.Length; j++)
+            {
+                for (int k = 0; k < graph.Points.Count; k++)
+                {
+                    if (array[j] == k)
+                    {
+                        strArray[k] = strArray[k] + $"{graph.Points[j].Name} ";
+                    }
+                }
+            }
+            foreach (string str in strArray)
+            {
+                if (str != null)
+                {
+                    line = line + "{" + $"{str.TrimEnd()}" + "} ";
+                }
+            }
+            return line;
+        }
+
+        int[] GetVertexSets(Subset[] subsets)
+        {
+            int[] vertexSets = new int[V];
+
+            for (int v = 0; v < V; v++)
+            {
+                vertexSets[v] = Find(subsets, v);
+            }
+
+            return vertexSets;
+        }
+
 
         private static List<Line> Add(Graph graph, List<Line> lightedOnLines, int start, int end)
         {
@@ -216,7 +287,8 @@ namespace Assets.Scripts.SpanningTree
             {
                 for (int k = 0; k < graph.Points.Count; k++)
                 {
-                    if ((graph.Lines[l].StartPoint == graph.Points[start]) && (graph.Lines[l].EndPoint == graph.Points[end]))
+                    if (((graph.Lines[l].StartPoint == graph.Points[start]) && (graph.Lines[l].EndPoint == graph.Points[end])) ||
+                         (graph.Lines[l].EndPoint == graph.Points[start]) && (graph.Lines[l].StartPoint == graph.Points[end]))
                     {
                         lightedOnLines.Add(graph.Lines[l]);
                     }

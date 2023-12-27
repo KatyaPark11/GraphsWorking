@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using static Assets.Scripts.VarsHolder;
 
 namespace Assets.Scripts.TransportNetwork
 {
@@ -13,7 +13,7 @@ namespace Assets.Scripts.TransportNetwork
     /// </summary>
     public class TransportStepsGetting
     {
-        public static List<TransportStep> transportSteps = new();
+        public static List<TransportStep> transportSteps;
         /// <summary>
         /// Метод для получения шагов поиска максимального потока транспортной сети.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Assets.Scripts.TransportNetwork
                 line.WeightIF.text = newWeight;
             }
             int maxFlow = MaxFlow(graph, sourcePointIndex, sinkPointIndex);
-            transportSteps.Add(new TransportStep(null, null, null, $"Максимальный поток равен {maxFlow}", null));
+            transportSteps.Add(new TransportStep(null, null, null, $"Максимальный поток равен {maxFlow}."));
             return transportSteps;
         }
 
@@ -53,10 +53,13 @@ namespace Assets.Scripts.TransportNetwork
                 List<Line> lightedOnThisStep = new();
                 Dictionary<Line, int> lineChanges = new();
                 int pathFlow = int.MaxValue;
+                List<TransportStep> transportStep = new();
+                List<int> pathVertices = new();
 
                 for (int v = sink; v != source; v = parent[v])
                 {
                     int u = parent[v];
+                    pathVertices.Add(v);
                     pathFlow = Math.Min(pathFlow, graphMatrix[u, v]);
                     temp[v] = u;
 
@@ -72,9 +75,15 @@ namespace Assets.Scripts.TransportNetwork
                     if (line != null)
                     {
                         lightedOnThisStep.Add(line);
+                        List<Line> lines = new() { line };
+                        transportStep.Add(new TransportStep(lines, null, new Dictionary<Line, int>(lineChanges),
+                                          $"Ищем путь от источника к стоку. Нашли путь от {line.StartPoint.Name} до {line.EndPoint.Name}"));
                     }
-                    transportSteps.Add(new TransportStep(lightedOnThisStep.ToList(), null, new Dictionary<Line, int>(lineChanges), 
-                        $"Промежуточный путь найден, текущий минимальный поток: {pathFlow}", null));
+                }
+
+                for (int i = transportStep.Count - 1; i >= 0; i--)
+                {
+                    transportSteps.Add(transportStep[i]);
                 }
 
                 for (int v = sink; v != source; v = temp[v])
@@ -99,14 +108,20 @@ namespace Assets.Scripts.TransportNetwork
                         lineChanges[line] = newFlow;
                     }
                 }
-                transportSteps.Add(new TransportStep(lightedOnThisStep, null, new Dictionary<Line, int>(lineChanges), $"Поток увеличен на {pathFlow}", null));
+
+                pathVertices.Add(source);
+                pathVertices.Reverse();
+                string pathDesc = string.Join(" ", pathVertices.Select(v => graph.Points[v].Name));
+
+                transportSteps.Add(new TransportStep(lightedOnThisStep, null, new Dictionary<Line, int>(lineChanges),
+                    $"Найденный путь: {pathDesc}. Поток увеличен на {pathFlow}. Текущий максимальный поток {maxFlow} + {pathFlow} = {maxFlow + pathFlow}."));
 
                 maxFlow += pathFlow;
             }
 
             return maxFlow;
         }
-            
+
         private static bool BFS(int source, int sink, int[] parent, int countPoint, int[,] residualGraph)
         {
             bool[] visited = new bool[countPoint];
@@ -119,9 +134,9 @@ namespace Assets.Scripts.TransportNetwork
             {
                 int u = queue.Dequeue();
 
-                for (int v = 0; v < countPoint; v++)
+                for (int v = 0; v < countPoint; ++v)
                 {
-                    if (!visited[v] && residualGraph[u, v] > 0)
+                    if (visited[v] == false && residualGraph[u, v] > 0)
                     {
                         queue.Enqueue(v);
                         parent[v] = u;

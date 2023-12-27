@@ -72,7 +72,6 @@ namespace Assets.Scripts
 
         public static void DoSpanningTreeStep()
         {
-            List<SpanningTreeStep> pyp = SpanningTreeSteps;
             if (SpanningTreeSteps == null) return;
             if (SpanningTreeSteps.Count == 0)
             {
@@ -86,19 +85,9 @@ namespace Assets.Scripts
             if (currentStep.LightedOnLines != null)
                 foreach (Line line in currentStep.LightedOnLines)
                     line.LightOn();
-            if (currentStep.RemovedLines != null)
-                foreach (Line line in currentStep.RemovedLines)
-                    RemoveLine(line);
             Description.text = currentStep.DescNext;
             CurrentStepNum++;
             ControlStepButton();
-        }
-
-        private static void RemoveLine(Line line)
-        {
-            GraphCopy.RemoveLine(line, true);
-            GraphCopy.UpdateLinesNames();
-            Destroy(line.LineObj);
         }
 
         public static void DoTransportStep()

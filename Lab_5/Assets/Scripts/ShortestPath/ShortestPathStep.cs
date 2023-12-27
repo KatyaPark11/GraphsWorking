@@ -21,10 +21,6 @@ namespace Assets.Scripts.ShortestPath
         /// Пояснение к этому шагу, если он был следующим.
         /// </summary>
         public readonly string DescNext;
-        /// <summary>
-        /// Пояснение к этому шагу, если он был предыдущим.
-        /// </summary>
-        public readonly string DescPrev;
 
         /// <summary>
         /// Конструктор класса.
@@ -33,14 +29,12 @@ namespace Assets.Scripts.ShortestPath
         /// <param name="lightedOffLines">Список возвращаемых к исходному состоянию на данном шаге линий.</param>
         /// <param name="pointShortestPathPairs">Словарь, сопоставляющий точку с изменённой в соответствии с данным шагом длиной кратчайшего пути.</param>
         /// <param name="descNext">Пояснение к этому шагу, если он был следующим.</param>
-        /// <param name="descPrev">Пояснение к этому шагу, если он был предыдущим.</param>
-        public ShortestPathStep(List<Line> lightedOnLines, List<Line> lightedOffLines, Dictionary<Point, int> pointShortestPathPairs, string descNext, string descPrev)
+        public ShortestPathStep(List<Line> lightedOnLines, List<Line> lightedOffLines, Dictionary<Point, int> pointShortestPathPairs, string descNext)
         {
             LightedOnLines = lightedOnLines;
             LightedOffLines = lightedOffLines;
             PointShortestPathPairs = pointShortestPathPairs;
             DescNext = descNext;
-            DescPrev = descPrev;
         }
     }
 }

@@ -25,10 +25,6 @@ namespace Assets.Scripts.SpanningTree
         /// Пояснение к этому шагу, если он был следующим.
         /// </summary>
         public readonly string DescNext;
-        /// <summary>
-        /// Пояснение к этому шагу, если он был предыдущим.
-        /// </summary>
-        public readonly string DescPrev;
 
         /// <summary>
         /// Конструктор класса.
@@ -37,14 +33,12 @@ namespace Assets.Scripts.SpanningTree
         /// <param name="lightedOffLines">Список возвращаемых к исходному состоянию на данном шаге линий.</param>
         /// <param name="removedLines">Список удаляемых на данном шаге линий.</param>
         /// <param name="descNext">Пояснение к этому шагу, если он был следующим.</param>
-        /// <param name="descPrev">Пояснение к этому шагу, если он был предыдущим.</param>
-        public SpanningTreeStep(List<Line> lightedOnLines, List<Line> lightedOffLines, List<Line> removedLines, string descNext, string descPrev)
+        public SpanningTreeStep(List<Line> lightedOnLines, List<Line> lightedOffLines, List<Line> removedLines, string descNext)
         {
             LightedOnLines = lightedOnLines;
             LightedOffLines = lightedOffLines;
             RemovedLines = removedLines;
             DescNext = descNext;
-            DescPrev = descPrev;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts.GraphComponents
@@ -45,26 +46,12 @@ namespace Assets.Scripts.GraphComponents
         /// <param name="points">Список точек, из которых состоит граф.</param>
         public Graph(List<Line> lines, List<Point> points)
         {
-            Lines = lines;
-            Points = points;
-            /*List<Point> pointsCopy = new();
-            List<Line> linesCopy = new();
-            foreach (Point point in points)
-            {
-                pointsCopy.Add(new Point(point.Position));
-                pointsCopy[^1].Name = point.Name;
-                pointsCopy[^1].LinkedLines = new();
-            }
-            Points = pointsCopy;
-
+            Lines = new List<Line>();
+            Points = new List<Point>();
             foreach (Line line in lines)
-            {
-                int startPointIndex = GetPointIndex(line.StartPoint.Name);
-                int endPointIndex = GetPointIndex(line.EndPoint.Name);
-                linesCopy.Add(new Line(Points[startPointIndex], Points[endPointIndex], line.Weight));
-            }
-            Lines = linesCopy;
-            SetLinkedLines();*/
+                Lines.Add(line);
+            foreach (Point point in points)
+                Points.Add(point);
         }
 
         /// <summary>
@@ -273,6 +260,15 @@ namespace Assets.Scripts.GraphComponents
             if (!Directory.Exists(saveDir)) 
                 Directory.CreateDirectory(saveDir);
             File.WriteAllText($"{saveDir}\\{graphName}.json", json);
+        }
+
+        public static string LinesToString(List<Line> lines)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Line line in lines)
+                sb.Append(line.StartPoint.Name + ' ');
+            sb.Append(lines[^1].EndPoint.Name);
+            return sb.ToString();
         }
     }
 }

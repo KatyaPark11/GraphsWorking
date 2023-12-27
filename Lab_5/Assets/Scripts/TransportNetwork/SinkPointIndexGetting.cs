@@ -1,12 +1,5 @@
-﻿using Assets.Scripts.Controllers;
-using Assets.Scripts.ShortestPath;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Scripts.GraphComponents;
 using UnityEngine;
-using UnityEngine.UI;
 using static Assets.Scripts.AlgorithmManager;
 using static Assets.Scripts.GraphCopyManager;
 using static Assets.Scripts.VarsHolder;
@@ -24,7 +17,7 @@ namespace Assets.Scripts.TransportNetwork
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     GameObject go = hit.collider.gameObject;
-                    if (go.CompareTag("Point"))
+                    if (go.CompareTag("Point") && IsSinkPoint(go))
                     {
                         SinkPointIndex = MainGraph.GetPointIndex(go);
                         TransportNetworkBegginer.SetActive(false);
@@ -39,6 +32,15 @@ namespace Assets.Scripts.TransportNetwork
                     }
                 }
             }
+        }
+
+        private static bool IsSinkPoint(GameObject pointGO)
+        {
+            Point point = MainGraph.GetPoint(pointGO);
+            foreach (Line line in point.LinkedLines)
+                if (point.IsStartPoint(line))
+                    return false;
+            return true;
         }
     }
 }

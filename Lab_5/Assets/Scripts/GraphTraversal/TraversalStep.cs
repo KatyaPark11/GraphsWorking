@@ -20,10 +20,6 @@ namespace Assets.Scripts.GraphTraversal
         /// Пояснение к этому шагу, если он был следующим.
         /// </summary>
         public readonly string DescNext;
-        /// <summary>
-        /// Пояснение к этому шагу, если он был предыдущим.
-        /// </summary>
-        public readonly string DescPrev;
 
         /// <summary>
         /// Конструктор класса.
@@ -31,13 +27,11 @@ namespace Assets.Scripts.GraphTraversal
         /// <param name="lightedOnLines">Список подсвечиваемых на данном шаге линий.</param>
         /// <param name="lightedOffLines">Список возвращаемых к исходному состоянию на данном шаге линий.</param>
         /// <param name="descNext">Пояснение к этому шагу, если он был следующим.</param>
-        /// <param name="descPrev">Пояснение к этому шагу, если он был предыдущим.</param>
-        public TraversalStep(List<Line> lightedOnLines, List<Line> lightedOffLines, string descNext, string descPrev)
+        public TraversalStep(List<Line> lightedOnLines, List<Line> lightedOffLines, string descNext)
         {
             LightedOnLines = lightedOnLines;
             LightedOffLines = lightedOffLines;
             DescNext = descNext;
-            DescPrev = descPrev;
         }
     }
 }
