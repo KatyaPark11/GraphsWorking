@@ -1,7 +1,4 @@
 ﻿using Assets.Scripts.GraphComponents;
-using Assets.Scripts.SpanningTree;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.ShortestPath
@@ -20,27 +17,14 @@ namespace Assets.Scripts.ShortestPath
         /// <param name="toPointIndex">Индекс конечной точки маршрута.</param>
         public static List<ShortestPathStep> GetShortestPathSteps(Graph graph, int fromPointIndex, int toPointIndex)
         {
-            int[,] graph1 = new int[graph.Points.Count, graph.Points.Count];
+            int[,] graphMatrix = new int[graph.Points.Count, graph.Points.Count];
             for (int i = 0; i < graph.Lines.Count; i++)
             {
-                int point1 = 0;
-                int point2 = 0;
-
-                for (int k = 0; k < graph.Points.Count; k++)
-                {
-                    if (graph.Lines[i].StartPoint == graph.Points[k])
-                    {
-                        point1 = k;
-                    }
-                    if (graph.Lines[i].EndPoint == graph.Points[k])
-                    {
-                        point2 = k;
-                    }
-                }
-                graph1[point1, point2] = int.Parse(graph.Lines[i].Weight);
-                graph1[point2, point1] = int.Parse(graph.Lines[i].Weight);
+                graphMatrix[graph.GetPointIndex(graph.Lines[i].StartPoint.Name),
+                    graph.GetPointIndex(graph.Lines[i].EndPoint.Name)] = int.Parse(graph.Lines[i].Weight);
             }
-            DijkstraAlgorithm dijkstraAlgorithm = new DijkstraAlgorithm(graph1, graph.Points.Count);
+
+            DijkstraAlgorithm dijkstraAlgorithm = new DijkstraAlgorithm(graphMatrix, graph.Points.Count);
             shortestPathStep = dijkstraAlgorithm.Run(fromPointIndex, toPointIndex, graph);
             return shortestPathStep;
         }
@@ -88,19 +72,23 @@ namespace Assets.Scripts.ShortestPath
             d.Add(graph1.Points[minIndex], min);
             string descNext = $"Ищем вершину с минимальным расстоянием, " +
                 $"которая еще не была посещена. Эта вершина - {graph1.Points[minIndex].Name} с минимальным расстоянием до неё {min}.\n";
-            if (str != "")
-            {
-                descNext += $"Посещенные вершины - {str}.";
-            }
+
             List<Line> lines = new();
 
             for (int i = 0; i < graph1.Lines.Count; i++)
             {
-                if ((graph1.Lines[i].StartPoint.Name == graph1.Points[array[1]].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[minIndex].Name) || 
-                     graph1.Lines[i].StartPoint.Name == graph1.Points[minIndex].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[array[1]].Name)
+                if (graph1.Lines[i].StartPoint.Name == graph1.Points[minIndex].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[array[1]].Name)
                 {
                     lines.Add(graph1.Lines[i]);
                 }
+            }
+            if (str != "")
+            {
+                descNext += $"Посещенные вершины - {str}.";
+            }
+            else
+            {
+                lines.Clear();
             }
             if (k == 0)
                 shortestPathStep.Add(new ShortestPathStep(lines, null, d, descNext));
@@ -156,8 +144,7 @@ namespace Assets.Scripts.ShortestPath
 
                         for (int i = 0; i < graph1.Lines.Count; i++)
                         {
-                            if ((graph1.Lines[i].StartPoint.Name == graph1.Points[u].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[v].Name) || 
-                                 graph1.Lines[i].StartPoint.Name == graph1.Points[v].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[u].Name)
+                            if (graph1.Lines[i].StartPoint.Name == graph1.Points[u].Name && graph1.Lines[i].EndPoint.Name == graph1.Points[v].Name)
                             {
                                 lines.Add(graph1.Lines[i]);
                             }
@@ -186,8 +173,7 @@ namespace Assets.Scripts.ShortestPath
                 if (previous[current] != -1)
                     for (int i = 0; i < graph.Lines.Count; i++)
                     {
-                        if ((graph.Lines[i].StartPoint.Name == graph.Points[current].Name && graph.Lines[i].EndPoint.Name == graph.Points[previous[current]].Name) || 
-                             graph.Lines[i].StartPoint.Name == graph.Points[previous[current]].Name && graph.Lines[i].EndPoint.Name == graph.Points[current].Name)
+                        if (graph.Lines[i].StartPoint.Name == graph.Points[previous[current]].Name && graph.Lines[i].EndPoint.Name == graph.Points[current].Name)
                         {
                             lightedOnLines.Add(graph.Lines[i]);
                         }
@@ -198,7 +184,7 @@ namespace Assets.Scripts.ShortestPath
                     }
                 current = previous[current];
             }
-            shortestPathStep.Add(new ShortestPathStep(lightedOnLines, lightedOffLines, null, 
+            shortestPathStep.Add(new ShortestPathStep(lightedOnLines, lightedOffLines, null,
                                  $"Кратчайшее расстояние от вершины {graph.Points[source].Name} до вершины {graph.Points[sink].Name} равно {distances[sink]}."));
         }
     }
